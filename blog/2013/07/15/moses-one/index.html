@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>iostreamin's Blog</title>
+  <title>Mint15安装moses教程 - iostreamin's Blog</title>
   <meta name="author" content="iostreamin">
 
   
-  <meta name="description" content="我的系统是Linux Mint15，64位的系统，gcc的版本是4.7.3，之后我将以此系统为例演示编译配置moses的步骤。 ">
+  <meta name="description" content="我的系统是Linux Mint15，64位的系统，gcc的版本是4.7.3，之后我将以此系统为例演示编译配置moses的步骤。 安装准备工作 安装boost及其他依赖包 sudo apt-get installlibboost-all-dev build-essential libz-dev &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://xeostream.github.com/">
+  <link rel="canonical" href="http://xeostream.github.com/blog/2013/07/15/moses-one/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -75,15 +75,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/07/15/moses-one/">Mint15安装moses教程</a></h1>
+      <h1 class="entry-title">Mint15安装moses教程</h1>
     
     
       <p class="meta">
@@ -101,79 +98,74 @@
 
 <time datetime="2013-07-15T21:10:00+08:00" pubdate data-updated="true">Jul 15<span>th</span>, 2013</time>
         
-         | <a href="/blog/2013/07/15/moses-one/#disqus_thread">Comments</a>
+         | <a href="#disqus_thread">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>我的系统是Linux Mint15，64位的系统，gcc的版本是4.7.3，之后我将以此系统为例演示编译配置moses的步骤。</p>
+<div class="entry-content"><p>我的系统是Linux Mint15，64位的系统，gcc的版本是4.7.3，之后我将以此系统为例演示编译配置moses的步骤。</p>
 
+<!--more-->
+
+
+<h1>安装准备工作</h1>
+
+<h2>安装boost及其他依赖包</h2>
+
+<pre><code>    sudo apt-get installlibboost-all-dev build-essential libz-dev libbz2-dev
+</code></pre>
+
+<p>boost的安装包还是很大的，我尝试从boost官网下载最新版本源码在本地编译，可是在后来编译moses时会报缺失boost包的错，所以推荐使用命令安装。</p>
+
+<h2>从github上下载moses源码</h2>
+
+<pre><code>    git clone git://github.com/moses-smt/mosesdecoder.git
+</code></pre>
+
+<p>熟悉git的人应该都知道，上面的命令是将github上moses的源码下载到本地(需要安装git,具体请搜索)，git是很好的代码同步工具，推荐尝试。之前看到有些关于moses的教程，可能由于时间比较久的关系，很多的内容已经不适合，所以建议大家如果不明白的地方，多看看<a href="http://www.statmt.org/moses/">官方网站</a>提供的教程，都是比较新的资料。</p>
+
+<h2>编译moses源码</h2>
+
+<pre><code>    cd .../mosesdecoder/     #之前下载的moses源码目录
+    ./bjam -j4      #ｊ之后的数字代表的是cpu运算核心的个数，我是i5的，所以是４
+</code></pre>
+
+<p>编译大概需要十分钟到半小时的样子，具体时间依据电脑配置不同而变化;bjam后可以跟很多可扩展的选项，不过官网的教程说如果boost安装好的话，应该就不需要加上其他的选项了。在后面的配置过程中，也没有出现相关的问题。</p>
+
+<h2>验证安装是否正确</h2>
+
+<p>首先下载测试数据</p>
+
+<pre><code>    cd .../mosesdecoder
+     wget http://www.statmt.org/moses/download/sample-models.tgz
+     tar xzf sample-models.tgz
+     cd sample-models
+</code></pre>
+
+<p>moses自带了语言建模工具包KenLM，数据默认是配置好的，不要改动。</p>
+
+<pre><code>    cd .../mosesdecoder/sample-models
+    ~/mosesdecoder/bin/moses -f phrase-model/moses.ini &lt; phrase-model/in &gt; out
+</code></pre>
+
+<p>如果安装正确的话，在out文件中应该是两行it is a small house。</p>
+
+<h1>结语</h1>
+
+<p>本篇介绍moses的编译工作，在接下来的博文里会继续介绍moses相关的其他工具的安装及EMS翻译系统的搭建工作。</p>
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/07/15/moses-one/">Read on &rarr;</a>
-    </footer>
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/26/rails-coreseek/">Coreseek配置rails项目全文搜索</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
   
 
+<span class="byline author vcard">Posted by <span class="fn">iostreamin</span></span>
 
-<time datetime="2013-03-26T22:07:00+08:00" pubdate data-updated="true">Mar 26<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/03/26/rails-coreseek/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>rails是ruby的web框架，由于rails框架的易用性，近几年出现了很多基于rails的网站，随着网站的发展，积累的数据会越来越多，有的时候我们可能要给网站升级，比如增加全文搜索功能，那就要用到我们说到的coreseek软件，coreseek是一款中文全文检索软件，coreseek本身是基于sphinx开发的，接下来介绍coreseek的安装与配置(需要安装包的可以给我留言)。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/03/26/rails-coreseek/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/16/rubyonrails-one/">RubyOnRails学习之rails框架</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
 
@@ -185,124 +177,45 @@
   
 
 
-<time datetime="2013-03-16T17:58:00+08:00" pubdate data-updated="true">Mar 16<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/03/16/rubyonrails-one/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>rails是基于MVC的web框架，model对应于active record，controller对应于action controller，view对应于action view。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/03/16/rubyonrails-one/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
+<time datetime="2013-07-15T21:10:00+08:00" pubdate data-updated="true">Jul 15<span>th</span>, 2013</time>
       
-  <header>
+
+
+    </p>
     
-      <h1 class="entry-title"><a href="/blog/2013/03/10/TDD/">Test Driven Development/TDD</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
+      <div class="sharing">
   
-
-
-<time datetime="2013-03-10T15:54:00+08:00" pubdate data-updated="true">Mar 10<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/03/10/TDD/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>作为一个有理想、有追求的程序员，你成天被各种名词包围着，你对其中一个叫做敏捷的东西特别感兴趣，因为它特别强调人的作用，这听着都让做程序员的你感到舒服。为了让自己早日敏捷起来，你从众多的敏捷实践中选择了一个叫做测试驱动开发（Test Driven Development，TDD）的作为你的起始点。因为它对你周遭的环境要求是最低的：它不像结对那样，要求其他人和你一起合作；也不像采用Story那样改变你所在团队的做事方式……你所需要做的，只是在你编写业务代码之前，把测试先写好。这完全是一种润物细无声的做法，根本无需告诉你之外的任何人。就在别人忙碌的找bug时，你便开始享受敏捷带给你的快乐了。顺便带来的好处是，下次在那里和别人争论敏捷的时候，你可以以一个实践者的姿态出现，而不是在那里信口开河。</p>
-
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://xeostream.github.com/blog/2013/07/15/moses-one/" data-via="" data-counturl="http://xeostream.github.com/blog/2013/07/15/moses-one/" >Tweet</a>
+  
+  
+  
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/03/10/TDD/">Read on &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  
-    <article>
+    
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/03/first-blog/">First Blog</a></h1>
-    
-    
-      <p class="meta">
-        
+        <a class="basic-alignment left" href="/blog/2013/03/26/rails-coreseek/" title="Previous Post: coreseek配置rails项目全文搜索">&laquo; coreseek配置rails项目全文搜索</a>
+      
+      
+    </p>
+  </footer>
+</article>
 
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-03T19:14:00+08:00" pubdate data-updated="true">Mar 3<span>rd</span>, 2013</time>
-        
-         | <a href="/blog/2013/03/03/first-blog/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>This is my first blog</h1>
-
-<p>This is my first blog</p>
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
-  
-  
+  </section>
 
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
 </div>
+
 <aside class="sidebar">
   
     <section>
   <h1>About Me</h1>
   <p>Jianshuang Wang</p>
   <p>Email:<a href="mailto:iostreamin@gmail.com">iostremin@gmail.com</a></p>
-  <p>study in Software Engineering of Southeast University,devote to Java,Ruby,Web development,Algorithm,OpenSource&#8230;Welcome exchange.</p>
+  <p>study in Software Engineering of Southeast University,devote to Java,Ruby,Web development,Algorithm,OpenSource...Welcome exchange.</p>
 </section>
 <section>
   <h1>Recent Posts</h1>
@@ -334,7 +247,7 @@
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   
   <a href="https://github.com/xeostream">@xeostream</a> on GitHub
@@ -364,6 +277,7 @@
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -378,7 +292,10 @@
       var disqus_shortname = 'iostreaminsblog';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://xeostream.github.com/blog/2013/07/15/moses-one/';
+        var disqus_url = 'http://xeostream.github.com/blog/2013/07/15/moses-one/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

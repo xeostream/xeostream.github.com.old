@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>iostreamin's Blog</title>
+  <title>RubyOnRails学习之rails框架 - iostreamin's Blog</title>
   <meta name="author" content="iostreamin">
 
   
-  <meta name="description" content="我的系统是Linux Mint15，64位的系统，gcc的版本是4.7.3，之后我将以此系统为例演示编译配置moses的步骤。 ">
+  <meta name="description" content="rails是基于MVC的web框架，model对应于active record，controller对应于action controller，view对应于action view。 Active record与model modle对应的active record 继承于ActiveRecord &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://xeostream.github.com/">
+  <link rel="canonical" href="http://xeostream.github.com/blog/2013/03/16/rubyonrails-one/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -75,101 +75,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/07/15/moses-one/">Mint15安装moses教程</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-15T21:10:00+08:00" pubdate data-updated="true">Jul 15<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/07/15/moses-one/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>我的系统是Linux Mint15，64位的系统，gcc的版本是4.7.3，之后我将以此系统为例演示编译配置moses的步骤。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/07/15/moses-one/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/26/rails-coreseek/">Coreseek配置rails项目全文搜索</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-26T22:07:00+08:00" pubdate data-updated="true">Mar 26<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/03/26/rails-coreseek/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>rails是ruby的web框架，由于rails框架的易用性，近几年出现了很多基于rails的网站，随着网站的发展，积累的数据会越来越多，有的时候我们可能要给网站升级，比如增加全文搜索功能，那就要用到我们说到的coreseek软件，coreseek是一款中文全文检索软件，coreseek本身是基于sphinx开发的，接下来介绍coreseek的安装与配置(需要安装包的可以给我留言)。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/03/26/rails-coreseek/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/16/rubyonrails-one/">RubyOnRails学习之rails框架</a></h1>
+      <h1 class="entry-title">RubyOnRails学习之rails框架</h1>
     
     
       <p class="meta">
@@ -187,79 +98,45 @@
 
 <time datetime="2013-03-16T17:58:00+08:00" pubdate data-updated="true">Mar 16<span>th</span>, 2013</time>
         
-         | <a href="/blog/2013/03/16/rubyonrails-one/#disqus_thread">Comments</a>
+         | <a href="#disqus_thread">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>rails是基于MVC的web框架，model对应于active record，controller对应于action controller，view对应于action view。</p>
+<div class="entry-content"><p>rails是基于MVC的web框架，model对应于active record，controller对应于action controller，view对应于action view。</p>
 
+<!--more-->
+
+
+<h2>Active record与model</h2>
+
+<p>modle对应的active record 继承于ActiveRecord::Base，类似于Hibernate，原理是利用文件名自动查找对应的业务对象与数据库中的表，由于数据的持久化，在每个表对应的唯一一个active record中声明表中每列的属性，这个过程需要一一对应。建立active record对象有两种方法；一，通过new()方法建立，这种方法声明的active record对象不会提交给数据库，所以无法在数据库中得到体现；二，通过create()方法声明的对象可以做到active record与数据库的同步。声明对象时需要给对象的属性赋值，赋值方法主要为在声明对象的同时传入hash或者是代码块。rails的ORM不需要像Java中SSH的大量配置文件，这要归功于“约定大于配置”理念。rails的数据库的配置需要到项目下config/database.yml中配置，数据库的表名是active record的类名的复数形式，例:catalogs-Catalog，这些可以在ActiveRecord：Base基类提供的方法中设置。</p>
+
+<h2>Action controller与controller</h2>
+
+<p>controller对应的action controller继承于ActionController::Base，每个controller都有一个或者多个action(方法)，action构成所有的业务逻辑，action负责模版绘制，重定向，文本编辑等等。首先视图中的模块通过dispatcher连接到对应的controller，controller的处理过程是获得:action的键值，调用指定的action。每个action对应的模版在app/views/controllername目录下，名字相互对应，如果没有缺省的action和模版，就调用名为index的action，action每次只能完成一次绘制或者重定向。</p>
+
+<h2>Action view与view</h2>
+
+<p>view对应于action view继承于ActionView::Base，而ActionView::Base定义了三种模版。</p>
+
+<blockquote><p>.rhtml文件，ruby代码嵌入html代码中，&lt;% %>是嵌入的ruby处理代码，&lt;=>是要显示的数据。<br>
+.rxml文件，生成xml文件。<br>
+.rjs文件，通过JavaScriptGenerator的对象page的方法对相应的html文件惊醒修改，这和rails的Ajax有关，之后我们在详细讨论。<br><br>
+<a href="http://xeostream.github.com/blog/2013/03/16/rubyonrails-one">版权所有</a>，欢迎转载注明出处与作者。</p></blockquote>
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/03/16/rubyonrails-one/">Read on &rarr;</a>
-    </footer>
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/10/TDD/">Test Driven Development/TDD</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
   
 
+<span class="byline author vcard">Posted by <span class="fn">iostreamin</span></span>
 
-<time datetime="2013-03-10T15:54:00+08:00" pubdate data-updated="true">Mar 10<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/03/10/TDD/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>作为一个有理想、有追求的程序员，你成天被各种名词包围着，你对其中一个叫做敏捷的东西特别感兴趣，因为它特别强调人的作用，这听着都让做程序员的你感到舒服。为了让自己早日敏捷起来，你从众多的敏捷实践中选择了一个叫做测试驱动开发（Test Driven Development，TDD）的作为你的起始点。因为它对你周遭的环境要求是最低的：它不像结对那样，要求其他人和你一起合作；也不像采用Story那样改变你所在团队的做事方式……你所需要做的，只是在你编写业务代码之前，把测试先写好。这完全是一种润物细无声的做法，根本无需告诉你之外的任何人。就在别人忙碌的找bug时，你便开始享受敏捷带给你的快乐了。顺便带来的好处是，下次在那里和别人争论敏捷的时候，你可以以一个实践者的姿态出现，而不是在那里信口开河。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/03/10/TDD/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/03/03/first-blog/">First Blog</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
 
@@ -271,38 +148,47 @@
   
 
 
-<time datetime="2013-03-03T19:14:00+08:00" pubdate data-updated="true">Mar 3<span>rd</span>, 2013</time>
-        
-         | <a href="/blog/2013/03/03/first-blog/#disqus_thread">Comments</a>
-        
-      </p>
+<time datetime="2013-03-16T17:58:00+08:00" pubdate data-updated="true">Mar 16<span>th</span>, 2013</time>
+      
+
+
+    </p>
     
-  </header>
-
-
-  <div class="entry-content"><h1>This is my first blog</h1>
-
-<p>This is my first blog</p>
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://xeostream.github.com/blog/2013/03/16/rubyonrails-one/" data-via="" data-counturl="http://xeostream.github.com/blog/2013/03/16/rubyonrails-one/" >Tweet</a>
+  
+  
+  
 </div>
-  
-  
 
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/03/10/TDD/" title="Previous Post: Test Driven Development/TDD">&laquo; Test Driven Development/TDD</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/03/26/rails-coreseek/" title="Next Post: coreseek配置rails项目全文搜索">coreseek配置rails项目全文搜索 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
 
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
+  </section>
+
+</div>
+
 <aside class="sidebar">
   
     <section>
   <h1>About Me</h1>
   <p>Jianshuang Wang</p>
   <p>Email:<a href="mailto:iostreamin@gmail.com">iostremin@gmail.com</a></p>
-  <p>study in Software Engineering of Southeast University,devote to Java,Ruby,Web development,Algorithm,OpenSource&#8230;Welcome exchange.</p>
+  <p>study in Software Engineering of Southeast University,devote to Java,Ruby,Web development,Algorithm,OpenSource...Welcome exchange.</p>
 </section>
 <section>
   <h1>Recent Posts</h1>
@@ -334,7 +220,7 @@
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   
   <a href="https://github.com/xeostream">@xeostream</a> on GitHub
@@ -364,6 +250,7 @@
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -378,7 +265,10 @@
       var disqus_shortname = 'iostreaminsblog';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://xeostream.github.com/blog/2013/03/16/rubyonrails-one/';
+        var disqus_url = 'http://xeostream.github.com/blog/2013/03/16/rubyonrails-one/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
