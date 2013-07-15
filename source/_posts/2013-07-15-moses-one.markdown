@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Mint15　安装moses教程"
+title: "Mint15安装moses教程"
 date: 2013-07-15 21:10
 comments: true
 categories: 
