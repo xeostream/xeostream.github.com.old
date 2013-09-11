@@ -4,7 +4,7 @@
   <title><![CDATA[iostreamin's Blog]]></title>
   <link href="http://xeostream.github.com/atom.xml" rel="self"/>
   <link href="http://xeostream.github.com/"/>
-  <updated>2013-07-15T22:42:59+08:00</updated>
+  <updated>2013-09-11T23:15:10+08:00</updated>
   <id>http://xeostream.github.com/</id>
   <author>
     <name><![CDATA[iostreamin]]></name>
@@ -51,7 +51,7 @@
 
 <p>首先下载测试数据</p>
 
-<pre><code>    cd .../mosesdecoder
+<pre><code>     cd .../mosesdecoder
      wget http://www.statmt.org/moses/download/sample-models.tgz
      tar xzf sample-models.tgz
      cd sample-models
