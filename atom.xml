@@ -4,7 +4,7 @@
   <title><![CDATA[iostreamin's Blog]]></title>
   <link href="http://xeostream.github.com/atom.xml" rel="self"/>
   <link href="http://xeostream.github.com/"/>
-  <updated>2013-11-14T12:08:50+08:00</updated>
+  <updated>2013-11-14T12:15:12+08:00</updated>
   <id>http://xeostream.github.com/</id>
   <author>
     <name><![CDATA[iostreamin]]></name>
@@ -83,7 +83,7 @@
 
 <p>代码：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -140,65 +140,63 @@
 <span class='line-number'>55</span>
 <span class='line-number'>56</span>
 <span class='line-number'>57</span>
-<span class='line-number'>58</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>
-</span><span class='line'>/*
-</span><span class='line'> * Created-On: 2013-10-11
-</span><span class='line'> * Author: Arthur_Wang
-</span><span class='line'> * KMP point: construct jump array, store short string jump information
-</span><span class='line'> * long, short = "BBC ABCDAB ABCDABCDABDE", "ABCDABD"
-</span><span class='line'> */
-</span><span class='line'>public class KMP {
-</span><span class='line'>  private String longString, shortString;
-</span><span class='line'>  private int[] jumps;
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm"> * Created-On: 2013-10-11</span>
+</span><span class='line'><span class="cm"> * Author: Arthur_Wang</span>
+</span><span class='line'><span class="cm"> * KMP point: construct jump array, store short string jump information</span>
+</span><span class='line'><span class="cm"> * long, short = &quot;BBC ABCDAB ABCDABCDABDE&quot;, &quot;ABCDABD&quot;</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KMP</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">longString</span><span class="o">,</span> <span class="n">shortString</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">jumps</span><span class="o">;</span>
 </span><span class='line'>
-</span><span class='line'>  public KMP(String longString, String shortString) {
-</span><span class='line'>      this.longString = longString;
-</span><span class='line'>      this.shortString = shortString;
-</span><span class='line'>      jumps = new int[shortString.length() + 1];
-</span><span class='line'>      jumps[0] = jumps[1] = 0;
-</span><span class='line'>  }
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">KMP</span><span class="o">(</span><span class="n">String</span> <span class="n">longString</span><span class="o">,</span> <span class="n">String</span> <span class="n">shortString</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">longString</span> <span class="o">=</span> <span class="n">longString</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">shortString</span> <span class="o">=</span> <span class="n">shortString</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">jumps</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">shortString</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">];</span>
+</span><span class='line'>      <span class="n">jumps</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="n">jumps</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
 </span><span class='line'>
-</span><span class='line'>  public void find() {
-</span><span class='line'>      for (int i = 0; i &lt; shortString.length() - 1; i++)
-</span><span class='line'>          jumps[i + 2] = next(i);
-</span><span class='line'>      for (int i : jumps)
-</span><span class='line'>          System.out.print(i + " ");
-</span><span class='line'>      int i = 0, j = 0;
-</span><span class='line'>      System.out.println("Start");
-</span><span class='line'>      while (i &lt; longString.length() && j &lt; shortString.length()) {
-</span><span class='line'>          if (longString.charAt(i) == shortString.charAt(j)) {
-</span><span class='line'>              j++;
-</span><span class='line'>              i++;
-</span><span class='line'>          } else if (j == 0)
-</span><span class='line'>              i++;
-</span><span class='line'>          else
-</span><span class='line'>              j = jumps[j];
-</span><span class='line'>      }
-</span><span class='line'>      if (j == shortString.length())
-</span><span class='line'>          System.out.println(i);
-</span><span class='line'>      else
-</span><span class='line'>          System.out.println("failed");
-</span><span class='line'>  }
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">find</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">shortString</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span><span class='line'>          <span class="n">jumps</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="o">]</span> <span class="o">=</span> <span class="n">next</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">:</span> <span class="n">jumps</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="s">&quot; &quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">,</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Start&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">longString</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">shortString</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">longString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">==</span> <span class="n">shortString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">j</span><span class="o">++;</span>
+</span><span class='line'>              <span class="n">i</span><span class="o">++;</span>
+</span><span class='line'>          <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
+</span><span class='line'>              <span class="n">i</span><span class="o">++;</span>
+</span><span class='line'>          <span class="k">else</span>
+</span><span class='line'>              <span class="n">j</span> <span class="o">=</span> <span class="n">jumps</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">==</span> <span class="n">shortString</span><span class="o">.</span><span class="na">length</span><span class="o">())</span>
+</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;failed&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
 </span><span class='line'>
-</span><span class='line'>  public int next(int index) {
-</span><span class='line'>      if (jumps[index + 1] &gt; 0) {
-</span><span class='line'>          if (shortString.charAt(index + 1) == shortString
-</span><span class='line'>                  .charAt(jumps[index + 1]))
-</span><span class='line'>              return jumps[index + 1] + 1;
-</span><span class='line'>          else
-</span><span class='line'>              next(jumps[jumps[index + 1]]);
-</span><span class='line'>      }
-</span><span class='line'>      if (shortString.charAt(0) == shortString.charAt(index + 1))
-</span><span class='line'>          return 1;
-</span><span class='line'>      return 0;
-</span><span class='line'>  }
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">next</span><span class="o">(</span><span class="kt">int</span> <span class="n">index</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">jumps</span><span class="o">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">shortString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">==</span> <span class="n">shortString</span>
+</span><span class='line'>                  <span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">jumps</span><span class="o">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]))</span>
+</span><span class='line'>              <span class="k">return</span> <span class="n">jumps</span><span class="o">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>          <span class="k">else</span>
+</span><span class='line'>              <span class="nf">next</span><span class="o">(</span><span class="n">jumps</span><span class="o">[</span><span class="n">jumps</span><span class="o">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]]);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">shortString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">==</span> <span class="n">shortString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">))</span>
+</span><span class='line'>          <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
 </span><span class='line'>
-</span><span class='line'>  public static void main(String... args) {
-</span><span class='line'>      KMP kmp = new KMP("BBC ABCDAB ABCDABCDABDE", "ABCDABD");
-</span><span class='line'>      kmp.find();
-</span><span class='line'>  }
-</span><span class='line'>}
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">KMP</span> <span class="n">kmp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KMP</span><span class="o">(</span><span class="s">&quot;BBC ABCDAB ABCDABCDABDE&quot;</span><span class="o">,</span> <span class="s">&quot;ABCDABD&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">kmp</span><span class="o">.</span><span class="na">find</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
