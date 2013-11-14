@@ -4,7 +4,7 @@
   <title><![CDATA[iostreamin's Blog]]></title>
   <link href="http://xeostream.github.com/atom.xml" rel="self"/>
   <link href="http://xeostream.github.com/"/>
-  <updated>2013-11-14T10:55:44+08:00</updated>
+  <updated>2013-11-14T12:08:50+08:00</updated>
   <id>http://xeostream.github.com/</id>
   <author>
     <name><![CDATA[iostreamin]]></name>
@@ -135,7 +135,19 @@
 <span class='line-number'>50</span>
 <span class='line-number'>51</span>
 <span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>
+</span><span class='line'>/*
+</span><span class='line'> * Created-On: 2013-10-11
+</span><span class='line'> * Author: Arthur_Wang
+</span><span class='line'> * KMP point: construct jump array, store short string jump information
+</span><span class='line'> * long, short = "BBC ABCDAB ABCDABCDABDE", "ABCDABD"
+</span><span class='line'> */
 </span><span class='line'>public class KMP {
 </span><span class='line'>  private String longString, shortString;
 </span><span class='line'>  private int[] jumps;
