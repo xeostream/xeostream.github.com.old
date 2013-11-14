@@ -21,7 +21,7 @@ boost的安装包还是很大的，我尝试从boost官网下载最新版本源�
 ##验证安装是否正确##
 首先下载测试数据
 
-        cd .../mosesdecoder
+         cd .../mosesdecoder
          wget http://www.statmt.org/moses/download/sample-models.tgz
          tar xzf sample-models.tgz
          cd sample-models
