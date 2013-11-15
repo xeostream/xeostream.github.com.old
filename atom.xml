@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[iostreamin's Blog]]></title>
+  <link href="http://xeostream.github.com/atom.xml" rel="self"/>
+  <link href="http://xeostream.github.com/"/>
+  <updated>2013-11-15T17:55:54+08:00</updated>
+  <id>http://xeostream.github.com/</id>
+  <author>
+    <name><![CDATA[iostreamin]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[字符串匹配算法－KMP理解]]></title>
+    <link href="http://xeostream.github.com/blog/2013/11/10/kmp/"/>
+    <updated>2013-11-10T10:03:00+08:00</updated>
+    <id>http://xeostream.github.com/blog/2013/11/10/kmp</id>
+    <content type="html"><![CDATA[<p>字符串匹配作为计算机的基本任务，有很多种算法可以高效的匹配字符串，<a href="http://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm">Knuth-Morris-Pratt算法</a>（简称KMP）是最常用的之一。可是很多人都觉得KMP难以理解，所以我就想试着理出一些头绪，如果能给你一些帮助，那就更好了。</p>
+
+<!--more-->
+
+
+<p>字符串匹配包括模式串和目标串两部分数据，普通的匹配算法需要回溯即不匹配就后退一位，而KMP通过对模式串的分析，避免一些注定失败的匹配过程，使得时间复杂度从(M*N)降低到(M+N)。</p>
+
+<p>KMP算法的高效性就在于next数组记录了当前字符不匹配的情况下模式串如何跳转，根据next数组记录的第一个元素的不同可以将KMP算法通过两种方式分析，第一种是传统的方式,next[0] = -1;第二种是最近看到的理解，next[0] = 0。接下来具体分析两种观点。</p>
+
+<h2>传(晦)统(涩)的KMP算法解析</h2>
+
+<p>传统的KMP算法中next数组的含义是当前位置的模式串字符与目标串字符不同时，模式串将要跳转的位置。举个例子，目标串S = ”abcabcabdabba”，模式串T = “abcabd”，然后构造next数组，算法如下:</p>
+
+<ol>
+<li>next[0] = -1，意义：任何模式串next的第一位都是-1。</li>
+<li>next[j] = k，意义：<em>T[0]~T[k-1] = T[j-k]~T[j-1]且T[k] != T[j]</em> <strong>(1 &lt;= k &lt; j)</strong>。</li>
+<li>next[j] = -1，意义：<em>T[0]~T[k-1] = T[j-k]~T[j-1]且T[k] = T[j]</em> <strong>(1 &lt;= k &lt; j)</strong>。</li>
+<li>next[j] = 0，意义：除上述情况的其他情况。</li>
+</ol>
+
+
+<p>根据上述算法，可以得到T的next数组next[0] = -1，next[1] = 0是毫无疑问的；next[2] = 0，因为“ab”没有相同的子串；next[3] = 0，因为“abc”没有相同的子串；next[4] = -1，因为T[0] = T[3]且T[1] = T[4]；next[5] = 2,因为T[0]T[1] = T[3]T[4]。</p>
+
+<p>在得到next数组之后如何跳转呢，这就是接下来要解决的问题。假设S和T匹配发现在S[m] != T[n]，对应到next[n]的三种情况，如下：</p>
+
+<ul>
+<li>next[n] = -1，即<em>T[0] = T[n]</em>，由于T[n] != S[m]，所以比较<strong>S[m+1] == T[0]</strong>。</li>
+<li>next[n] = 0，即<em>T[0] != T[n]</em>，比较<strong>S[m] == T[0]</strong>。</li>
+<li>next[n] = k (1 &lt;= k &lt; n)，即<em>T[0]~T[k-1] = T[n-k]~T[n-1] = S[m-k]~S[m-1]</em>，比较<strong>S[m] == T[k]</strong>。</li>
+</ul>
+
+
+<p>可以看出，传(晦)统(涩)的的KMP思路不复杂但是不太清晰，再加上很多教材上对next数组解释不清和一些莫名其妙的递归过程求next数组，使得我们很容易迷惑。</p>
+
+<h2>新(聪)颖(明)的KMP算法解析</h2>
+
+<p>相对于传统的事无巨细的KMP解析过程，这次的解析是从整体的角度来解析KMP算法，有一种高屋建瓴的快感。</p>
+
+<p>仍然通过对目标串S，模式串T的匹配过程来分析。首先改变next数组的定义，<em>next[n] = k，即T[0]~T[k] = T[n-k]~T[n]</em>，跳转算法也要做相应的调整：<em>向后移动的位数 = 当前匹配的字符数 &ndash; next[n] = (n &ndash; k)</em>。</p>
+
+<p>最重要的过程仍然是构造next数组，不同于传统的构造next数组方法的复杂，这次我们采用一种看起来比较简单的方法-<em>通过字符串中前缀与后缀中共有的最长的字符串的长度作为next数组的元素值</em>。</p>
+
+<p>首先解释下前缀和后缀的概念：</p>
+
+<blockquote><p><strong>字符串：bread</strong></p>
+
+<p><strong>前缀：b，br，bre，brea</strong></p>
+
+<p><strong>后缀：d，ad，ead，read</strong></p></blockquote>
+
+<p>如果模式串T = “ABCDABD”，构造next数组：</p>
+
+<ul>
+<li>“A”前缀和后缀都为空集，共有的为空，则next[0] = 0</li>
+<li>“AB”前缀为[A]，后缀为[B]，共有的为空，则next[1] = 0</li>
+<li>“ABC”前缀为[A，AB]，后缀为[C，BC]，共有的为空，则next[2] = 0</li>
+<li>“ABCD”前缀为[A，AB，ABC]，后缀为[D，CD，BCD]，共有的为空，则next[3] = 0</li>
+<li>“ABCDA”前缀为[A，AB，ABC，ABCD]，后缀为[A，DA，CDA，BCDA]，共有的为[A]，则next[4] = 1</li>
+<li>“ABCDAB”前缀为[A，AB，ABC，ABCD，ABCDA]，后缀为[B，AB，DAB，CDAB，BCDAB]，共有的为[AB]，next[5] = 2</li>
+<li>“ABCDABD”前缀为[A，AB，ABC，ABCD，ABCDA，ABCDAB]，后缀为[D，BD，ABD，DABD，CDABD，BCDABD]，共有的为空，则next[6] = 0</li>
+</ul>
+
+
+<p>代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm"> * Created-On: 2013-10-11</span>
+</span><span class='line'><span class="cm"> * Author: Arthur_Wang</span>
+</span><span class='line'><span class="cm"> * KMP point: construct jump array, store short string jump information</span>
+</span><span class='line'><span class="cm"> * long, short = &quot;BBC ABCDAB ABCDABCDABDE&quot;, &quot;ABCDABD&quot;</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KMP</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">longString</span><span class="o">,</span> <span class="n">shortString</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">jumps</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">KMP</span><span class="o">(</span><span class="n">String</span> <span class="n">longString</span><span class="o">,</span> <span class="n">String</span> <span class="n">shortString</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">longString</span> <span class="o">=</span> <span class="n">longString</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">shortString</span> <span class="o">=</span> <span class="n">shortString</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">jumps</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">shortString</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">];</span>
+</span><span class='line'>      <span class="n">jumps</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="n">jumps</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">find</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">shortString</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span><span class='line'>          <span class="n">jumps</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="o">]</span> <span class="o">=</span> <span class="n">next</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">:</span> <span class="n">jumps</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="s">&quot; &quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">,</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Start&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">longString</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">shortString</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">longString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">==</span> <span class="n">shortString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">j</span><span class="o">++;</span>
+</span><span class='line'>              <span class="n">i</span><span class="o">++;</span>
+</span><span class='line'>          <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
+</span><span class='line'>              <span class="n">i</span><span class="o">++;</span>
+</span><span class='line'>          <span class="k">else</span>
+</span><span class='line'>              <span class="n">j</span> <span class="o">=</span> <span class="n">jumps</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">==</span> <span class="n">shortString</span><span class="o">.</span><span class="na">length</span><span class="o">())</span>
+</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;failed&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">next</span><span class="o">(</span><span class="kt">int</span> <span class="n">index</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">jumps</span><span class="o">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">shortString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">==</span> <span class="n">shortString</span>
+</span><span class='line'>                  <span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">jumps</span><span class="o">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]))</span>
+</span><span class='line'>              <span class="k">return</span> <span class="n">jumps</span><span class="o">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>          <span class="k">else</span>
+</span><span class='line'>              <span class="nf">next</span><span class="o">(</span><span class="n">jumps</span><span class="o">[</span><span class="n">jumps</span><span class="o">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]]);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">shortString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">==</span> <span class="n">shortString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">))</span>
+</span><span class='line'>          <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">KMP</span> <span class="n">kmp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KMP</span><span class="o">(</span><span class="s">&quot;BBC ABCDAB ABCDABCDABDE&quot;</span><span class="o">,</span> <span class="s">&quot;ABCDABD&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">kmp</span><span class="o">.</span><span class="na">find</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>结论</h2>
+
+<p>有的读者可能已经看出来上文两种方法其实没有本质的不同，最大的区别在于两者构造next数组的过程，第二种方式从整体上考虑模式串的特征，直观看起来更容易理解，如果有不同看法，欢迎交流！</p>
+
+<p>参考资料</p>
+
+<ul>
+<li><a href="http://blog.csdn.net/merlin_q/article/details/6707990">KMP</a></li>
+<li><a href="http://blog.jobbole.com/39066/">字符串匹配的KMP算法</a></li>
+</ul>
+
+
+<p>声明：欢迎转载，请注明出处。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Mint15安装moses教程]]></title>
+    <link href="http://xeostream.github.com/blog/2013/07/15/moses-one/"/>
+    <updated>2013-07-15T21:10:00+08:00</updated>
+    <id>http://xeostream.github.com/blog/2013/07/15/moses-one</id>
+    <content type="html"><![CDATA[<p>我的系统是Linux Mint15，64位的系统，gcc的版本是4.7.3，之后我将以此系统为例演示编译配置moses的步骤。</p>
+
+<!--more-->
+
+
+<h1>安装准备工作</h1>
+
+<h2>安装boost及其他依赖包</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo apt-get installlibboost-all-dev build-essential libz-dev libbz2-dev
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>boost的安装包还是很大的，我尝试从boost官网下载最新版本源码在本地编译，可是在后来编译moses时会报缺失boost包的错，所以推荐使用命令安装。</p>
+
+<h2>从github上下载moses源码</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>git clone git://github.com/moses-smt/mosesdecoder.git
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>熟悉git的人应该都知道，上面的命令是将github上moses的源码下载到本地(需要安装git,具体请搜索)，git是很好的代码同步工具，推荐尝试。之前看到有些关于moses的教程，可能由于时间比较久的关系，很多的内容已经不适合，所以建议大家如果不明白的地方，多看看<a href="http://www.statmt.org/moses/">官方网站</a>提供的教程，都是比较新的资料。</p>
+
+<h2>编译moses源码</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">cd</span> .../mosesdecoder/     <span class="c">#之前下载的moses源码目录</span>
+</span><span class='line'>./bjam -j4      <span class="c">#ｊ之后的数字代表的是cpu运算核心的个数，我是i5的，所以是４</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>编译大概需要十分钟到半小时的样子，具体时间依据电脑配置不同而变化;bjam后可以跟很多可扩展的选项，不过官网的教程说如果boost安装好的话，应该就不需要加上其他的选项了。在后面的配置过程中，也没有出现相关的问题。</p>
+
+<h2>验证安装是否正确</h2>
+
+<p>首先下载测试数据</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">cd</span> .../mosesdecoder
+</span><span class='line'>wget http://www.statmt.org/moses/download/sample-models.tgz
+</span><span class='line'>tar xzf sample-models.tgz
+</span><span class='line'><span class="nb">cd </span>sample-models
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>moses自带了语言建模工具包KenLM，数据默认是配置好的，不要改动。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">cd</span> .../mosesdecoder/sample-models
+</span><span class='line'>~/mosesdecoder/bin/moses -f phrase-model/moses.ini &lt; phrase-model/in &gt; out
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果安装正确的话，在out文件中应该是两行it is a small house。</p>
+
+<h1>结语</h1>
+
+<p>本篇介绍moses的编译工作，在接下来的博文里会继续介绍moses相关的其他工具的安装及EMS翻译系统的搭建工作。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[coreseek配置rails项目全文搜索]]></title>
+    <link href="http://xeostream.github.com/blog/2013/03/26/rails-coreseek/"/>
+    <updated>2013-03-26T22:07:00+08:00</updated>
+    <id>http://xeostream.github.com/blog/2013/03/26/rails-coreseek</id>
+    <content type="html"><![CDATA[<p>rails是ruby的web框架，由于rails框架的易用性，近几年出现了很多基于rails的网站，随着网站的发展，积累的数据会越来越多，有的时候我们可能要给网站升级，比如增加全文搜索功能，那就要用到我们说到的coreseek软件，coreseek是一款中文全文检索软件，coreseek本身是基于sphinx开发的，接下来介绍coreseek的安装与配置(需要安装包的可以给我留言)。</p>
+
+<!--more-->
+
+
+<h2>安装coreseek</h2>
+
+<p>1.首先在安装coreseek之前，配置环境，安装编译需要的一些软件，运行命令:</p>
+
+<pre><code>    sudo su
+    apt-get install make gcc g++ automake libtool mysql-client libmysqlclient15-dev libxml2-dev libexpat1-dev
+</code></pre>
+
+<p>2.bash中进入解压好的文件夹下，可以看到csft%文件夹和mmseg%文件夹等，首先要安装mmseg，如果成功之后，继续安装csft。<br>
+3.进入mmseg文件夹中，开始安装mmseg，执行命令：</p>
+
+<pre><code>    ./bootstrap
+    ./configure --prefix=path #path为mmseg的安装目录，例/usr/local/bin/mmseg3等
+    make
+    make install
+    cd ..
+</code></pre>
+
+<p>4.进入csft文件夹下，执行命令：</p>
+
+<pre><code>    sh buildconf.sh
+    ./configure --prefix=/usr/local/bin/coreseek --without-unixodbc --with-mmseg --with-mmseg-includes=/usr/local/bin/mmseg3/include/mmseg/ --with-mmseg-libs=/usr/local/bin/mmseg3/lib/ --with-mysql #第一个prefix参数值将做为coreseek的安装目录，之后的参数完全参照mmseg的安装目录进行设置
+    make
+    make install
+    cd ..
+</code></pre>
+
+<p>5.测试coreseek是否安装成功，执行如下命令：</p>
+
+<pre><code>    cd testpack
+    cat var/test/test.xml
+    /usr/local/bin/mmseg3/bin/mmseg -d /usr/local/bin/mmseg3/etc var/test/test.xml
+    /usr/local/bin/coreseek/bin/indexer -c etc/csft.conf --all #这里报错段错误，解决:打开csft.conf修改charset_dictpath为uni.lib目录
+    /usr/local/bin/coreseek/bin/search -c etc/csft.conf 网络 #如果coreseek安装成功，这时应该会返回一定的根据关键字’网络‘搜索到的结果。
+</code></pre>
+
+<h2>coreseek配置</h2>
+
+<p>coreseek安装成功之后，就是在rails项目中配置coreseek，我们也可以总结为几个步骤。<br>
+1.进入rails项目文件夹下config文件夹下新建sphinx.yml,配置文件很重要，需要与安装目录项目对应，配置代码大致如下：</p>
+
+<pre><code>    development:
+    charset_type: zh_cn.utf-8
+    charset_dictpath: /usr/local/coreseek/var/data/
+    bin_path: /usr/local/bin
+    searchd_binary_name: searchd
+    indexer_binary_name: indexer
+    ...
+</code></pre>
+
+<p>2.在bash中，cd到当前rails项目目录下，运行命令：</p>
+
+<pre><code>    rake ts:index #为配置的model建立索引
+</code></pre>
+
+<p>如果有报段错误之类的，这说明之前生成的中文字典出现问题，需要重新生成中文字典，在bash中重新进入到mmseg/data文件夹下</p>
+
+<pre><code>    python build_unigram.py char.stat.txt Lexicon_full_words.txt &gt; unigram.txt
+    mmseg -u unigram.txt #此命令会生成unigram.txt.uni
+</code></pre>
+
+<p>将生成的unigram.txt.uni重命名为uni.lib,将其复制到coreseek的安装目录/var/data/<br>
+再次运行命令:</p>
+
+<pre><code>    rake ts:index
+</code></pre>
+
+<p>配置的model的索引应该就成功建立。<br>
+3.开启coreseek服务，可以在rails项目的console下运行search方法进行全文检索。</p>
+
+<pre><code>    rake ts:start
+</code></pre>
+
+<p>这些天一直在看coreseek配置，由于coreseek的官网无法访问，所以其中曲折只有亲身体会才会知道，本人才疏学浅，如有异议，还请不吝赐教。  <br/>
+<a href="http://xeostream.github.com/blog/2013/03/26/rails-coreseek">版权所有</a>，欢迎转载注明出处与作者。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[RubyOnRails学习之rails框架]]></title>
+    <link href="http://xeostream.github.com/blog/2013/03/16/rubyonrails-one/"/>
+    <updated>2013-03-16T17:58:00+08:00</updated>
+    <id>http://xeostream.github.com/blog/2013/03/16/rubyonrails-one</id>
+    <content type="html"><![CDATA[<p>rails是基于MVC的web框架，model对应于active record，controller对应于action controller，view对应于action view。</p>
+
+<!--more-->
+
+
+<h2>Active record与model</h2>
+
+<p>modle对应的active record 继承于ActiveRecord::Base，类似于Hibernate，原理是利用文件名自动查找对应的业务对象与数据库中的表，由于数据的持久化，在每个表对应的唯一一个active record中声明表中每列的属性，这个过程需要一一对应。建立active record对象有两种方法；一，通过new()方法建立，这种方法声明的active record对象不会提交给数据库，所以无法在数据库中得到体现；二，通过create()方法声明的对象可以做到active record与数据库的同步。声明对象时需要给对象的属性赋值，赋值方法主要为在声明对象的同时传入hash或者是代码块。rails的ORM不需要像Java中SSH的大量配置文件，这要归功于“约定大于配置”理念。rails的数据库的配置需要到项目下config/database.yml中配置，数据库的表名是active record的类名的复数形式，例:catalogs-Catalog，这些可以在ActiveRecord：Base基类提供的方法中设置。</p>
+
+<h2>Action controller与controller</h2>
+
+<p>controller对应的action controller继承于ActionController::Base，每个controller都有一个或者多个action(方法)，action构成所有的业务逻辑，action负责模版绘制，重定向，文本编辑等等。首先视图中的模块通过dispatcher连接到对应的controller，controller的处理过程是获得:action的键值，调用指定的action。每个action对应的模版在app/views/controllername目录下，名字相互对应，如果没有缺省的action和模版，就调用名为index的action，action每次只能完成一次绘制或者重定向。</p>
+
+<h2>Action view与view</h2>
+
+<p>view对应于action view继承于ActionView::Base，而ActionView::Base定义了三种模版。</p>
+
+<blockquote><p>.rhtml文件，ruby代码嵌入html代码中，&lt;% %>是嵌入的ruby处理代码，&lt;=>是要显示的数据。<br>
+.rxml文件，生成xml文件。<br>
+.rjs文件，通过JavaScriptGenerator的对象page的方法对相应的html文件惊醒修改，这和rails的Ajax有关，之后我们在详细讨论。<br><br>
+<a href="http://xeostream.github.com/blog/2013/03/16/rubyonrails-one">版权所有</a>，欢迎转载注明出处与作者。</p></blockquote>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Test Driven Development/TDD]]></title>
+    <link href="http://xeostream.github.com/blog/2013/03/10/TDD/"/>
+    <updated>2013-03-10T15:54:00+08:00</updated>
+    <id>http://xeostream.github.com/blog/2013/03/10/TDD</id>
+    <content type="html"><![CDATA[<p>作为一个有理想、有追求的程序员，你成天被各种名词包围着，你对其中一个叫做敏捷的东西特别感兴趣，因为它特别强调人的作用，这听着都让做程序员的你感到舒服。为了让自己早日敏捷起来，你从众多的敏捷实践中选择了一个叫做测试驱动开发（Test Driven Development，TDD）的作为你的起始点。因为它对你周遭的环境要求是最低的：它不像结对那样，要求其他人和你一起合作；也不像采用Story那样改变你所在团队的做事方式……你所需要做的，只是在你编写业务代码之前，把测试先写好。这完全是一种润物细无声的做法，根本无需告诉你之外的任何人。就在别人忙碌的找bug时，你便开始享受敏捷带给你的快乐了。顺便带来的好处是，下次在那里和别人争论敏捷的时候，你可以以一个实践者的姿态出现，而不是在那里信口开河。</p>
+
+<!--more-->
+
+
+<p>你不会打无准备之仗，于是，你通读了Kent Beck的那本薄册子。通读之下，你对TDD更是充满了信心。因为“红——绿——重构”的步骤实在是简单得令人发指。好吧！总而言之，你已经信心十足的准备开始TDD，步入敏捷的康庄大道了。</p>
+
+<p>理想很美好，现实很残酷。</p>
+
+<p>当你着手在实际项目中体验TDD的时候，一切变得并不像最初看起来的那样美好。虽然你努力的坚持着TDD的原则，但你经常就会发现某些东西不好测，比如你遇到了数据库，比如你遇到了GUI，比如你遇到了计时器（Timer）。敏捷并非教条，当某些事不可为的时候，你完全可以不那么坚持。于是，你告诉自己，不好测的东西可以不测，这样，至少从心理上来说，你觉得舒服多了。随着工作的继续，你发现，你不能测的东西越来越多，单元测试的覆盖率随着开发的进行正在逐渐降低，一丝恐惧涌上心头。回过头来，再去看Kent Beck的书，你突然觉得，你似乎被骗了，因为Kent Beck的例子貌似全都是逻辑，如果只是逻辑，当然好测了，但现实从来就不是这样。</p>
+
+<p>难道TDD只是看上去很美？</p>
+
+<p>显然，你不愿意就这样放弃，放弃你苦心学来的软件开发秘籍，那些传说中的高手极力推崇的TDD必然有一定道理，TDD确实能够让你感觉很好：能测试的那部分代码确实极大的增强了你对软件质量的信心，而且出错了也确实好找，每次修改代码之后运行测试出现的绿条也确实让你身心愉悦。</p>
+
+<p>那问题到底出在哪呢？你陷入了沉思。</p>
+
+<p>信马由缰，你翻开了自己写过的代码。看着自己写的这些代码，你忽然意识到一个问题，自己遇到的问题并不属于TDD，而是属于单元测试。正如你之前所想到的那样，TDD做法本身的结果是让你感到快乐的。对，一定是单元测试本身出了问题。那单元测试出了什么问题，很显然，一大堆不能测试的部分让单元测试变得很难写，降低了单元测试的覆盖度。那是不是这会是一个无解的问题呢？你显然不愿意就此放弃，所以，顺着这个思路继续向前。</p>
+
+<p>TDD之所以让你安心，主要是每次编写代码之后，运行测试会出现一个绿条，告诉你测试通过。这样，你可以放心大胆的向前继续，因为你的代码并没有破坏任何东西。究竟是什么让你感到不安，显然是那些测试没有覆盖到的代码。你又仔细翻看了一下那些没有测试覆盖的代码，你的思路一下子清晰起来。之所以这部分让你不安，因为里面除了那些确实不好测试的部分之外，里面还有一些逻辑。如果只是那些真正不好测试的部分没有被测试覆盖到，你会觉得心里还有一些安慰。你确定了，真正使你不安的就是与不好测试的代码共存亡的这些逻辑部分。</p>
+
+<p>如果测试可以覆盖到这些逻辑的部分，至少从感情上来说，就可以接受了。那怎么才能让这些部分被测试覆盖到呢？你仔细观察着那些没有测试的代码，如果这样做，这个部分就可以测试了，如果那样做，那个部分也可以测试了，一来二去，这些貌似不可测试的代码可以分解出许多可以测试的部分。</p>
+
+<p>你的心情一下子好了许多，因为这么做终于可以让测试的覆盖度达到让你心理上可以接受的范围。不过，新的问题也随之而来。我在做什么？拆来分去，这不就是设计吗？怎么走到这里来了。我不是在分析单元测试的问题吗？对了，我最初的问题是TDD，怎么一路跑到设计上来了？</p>
+
+<p>TDD？设计？</p>
+
+<p>你突然发觉自己对TDD的理解有一些偏差。TDD，并不代表不需要设计。读过很多书的你突然想起了Robert Martin那本著名的《敏捷软件开发》，上面有一个关于数据库访问的例子。那个例子里面，前后两个版本的差异正好就是考虑设计的结果。通常，在设计中考虑测试，会很容易找到设计中僵硬的部分，让程序更加灵活。再进一步，如果在开始动手之前，稍微进行一些设计，这些问题还是可能注意得到的。你突然觉得，正是因为TDD本身过于强调测试的价值所在，让你忽略软件开发中很重要的部分：设计。</p>
+
+<p>思路一下子清楚起来，TDD其实不只是“红——绿——重构”，它还是与设计相关的：在动手之前，还是要有一定的设计，而且，在设计中要考虑测试的问题。终于解开了心中的困惑，现在的你，对于TDD有了一个新的认识，虽然这个认识不见得是什么终极真理，但至少是通过自己的思考得来的，这让你更加相信实践出真知的道理。</p>
+
+<p>理清思路后，你更加坚信TDD本身的价值所在，也坚定了在日后开发中继续使用TDD的念头，当然，目光远大的你已经盯上了其它的敏捷实践。</p>
+
+<p><a href="http://dreamhead.blogbus.com/logs/14189175.html">版权：</a>，转载时请标明出处与作者。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[first blog]]></title>
+    <link href="http://xeostream.github.com/blog/2013/03/03/first-blog/"/>
+    <updated>2013-03-03T19:14:00+08:00</updated>
+    <id>http://xeostream.github.com/blog/2013/03/03/first-blog</id>
+    <content type="html"><![CDATA[<h1>This is my first blog</h1>
+
+<p>This is my first blog</p>
+]]></content>
+  </entry>
+  
+</feed>
