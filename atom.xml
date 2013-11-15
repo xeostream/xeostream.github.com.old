@@ -4,7 +4,7 @@
   <title><![CDATA[iostreamin's Blog]]></title>
   <link href="http://xeostream.github.com/atom.xml" rel="self"/>
   <link href="http://xeostream.github.com/"/>
-  <updated>2013-11-14T12:27:23+08:00</updated>
+  <updated>2013-11-15T17:45:49+08:00</updated>
   <id>http://xeostream.github.com/</id>
   <author>
     <name><![CDATA[iostreamin]]></name>
@@ -230,23 +230,27 @@
 
 <h2>安装boost及其他依赖包</h2>
 
-<pre><code>    sudo apt-get installlibboost-all-dev build-essential libz-dev libbz2-dev
-</code></pre>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get installlibboost-all-dev build-essential libz-dev libbz2-dev</span></code></pre></td></tr></table></div></figure>
+
 
 <p>boost的安装包还是很大的，我尝试从boost官网下载最新版本源码在本地编译，可是在后来编译moses时会报缺失boost包的错，所以推荐使用命令安装。</p>
 
 <h2>从github上下载moses源码</h2>
 
-<pre><code>    git clone git://github.com/moses-smt/mosesdecoder.git
-</code></pre>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git clone git://github.com/moses-smt/mosesdecoder.git</span></code></pre></td></tr></table></div></figure>
+
 
 <p>熟悉git的人应该都知道，上面的命令是将github上moses的源码下载到本地(需要安装git,具体请搜索)，git是很好的代码同步工具，推荐尝试。之前看到有些关于moses的教程，可能由于时间比较久的关系，很多的内容已经不适合，所以建议大家如果不明白的地方，多看看<a href="http://www.statmt.org/moses/">官方网站</a>提供的教程，都是比较新的资料。</p>
 
 <h2>编译moses源码</h2>
 
-<pre><code>    cd .../mosesdecoder/     #之前下载的moses源码目录
-    ./bjam -j4      #ｊ之后的数字代表的是cpu运算核心的个数，我是i5的，所以是４
-</code></pre>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd .../mosesdecoder/     #之前下载的moses源码目录
+</span><span class='line'>./bjam -j4      #ｊ之后的数字代表的是cpu运算核心的个数，我是i5的，所以是４</span></code></pre></td></tr></table></div></figure>
+
 
 <p>编译大概需要十分钟到半小时的样子，具体时间依据电脑配置不同而变化;bjam后可以跟很多可扩展的选项，不过官网的教程说如果boost安装好的话，应该就不需要加上其他的选项了。在后面的配置过程中，也没有出现相关的问题。</p>
 
@@ -254,17 +258,23 @@
 
 <p>首先下载测试数据</p>
 
-<pre><code>     cd .../mosesdecoder
-     wget http://www.statmt.org/moses/download/sample-models.tgz
-     tar xzf sample-models.tgz
-     cd sample-models
-</code></pre>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd .../mosesdecoder
+</span><span class='line'>wget http://www.statmt.org/moses/download/sample-models.tgz
+</span><span class='line'>tar xzf sample-models.tgz
+</span><span class='line'>cd sample-models</span></code></pre></td></tr></table></div></figure>
+
 
 <p>moses自带了语言建模工具包KenLM，数据默认是配置好的，不要改动。</p>
 
-<pre><code>    cd .../mosesdecoder/sample-models
-    ~/mosesdecoder/bin/moses -f phrase-model/moses.ini &lt; phrase-model/in &gt; out
-</code></pre>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd .../mosesdecoder/sample-models
+</span><span class='line'>~/mosesdecoder/bin/moses -f phrase-model/moses.ini &lt; phrase-model/in &gt; out</span></code></pre></td></tr></table></div></figure>
+
 
 <p>如果安装正确的话，在out文件中应该是两行it is a small house。</p>
 
