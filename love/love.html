@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Love</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<style type="text/css">
+		@font-face {
+			font-family: digit;
+			src: url('digital-7_mono.ttf') format("truetype");
+		}
+	</style>
+	<link href="css/default_dev.css" type="text/css" rel="stylesheet">
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/garden_dev.js"></script>
+    <script type="text/javascript" src="js/functions_dev.js"></script>
+</head>
+<body>
+	<div id="mainDiv">
+		<div id="content">
+			<div id="code">
+				<span class="comments">/**</span><br />
+				<span class="space"/><span class="comments">* Today is your birthday and we have fall in love for 999 days,</span><br />
+				<span class="space"/><span class="comments">* so I fork some code to celebrate your birthday and our love.</span><br />
+				<span class="space"/><span class="comments">*/</span><br />
+				Boy i = <span class="keyword">new</span> Boy(<span class="string">"Arthur_Wang"</span>);<br />
+				Girl u = <span class="keyword">new</span> Girl(<span class="string">"Cs"</span>);<br />
+				<span class="comments">// Someday at 2009. </span><br />
+				i.know(u);<br />
+				<span class="comments">// We are middle school students.</span><br />
+				<span class="keyword">while</span> (<span class="keyword">true</span>) <br />
+				<span class="placeholder">u.consult(i);</span> <br />
+				<span class="comments">// ...Stack over flow~, finally</span> <br />
+				isFamilar = <span class="keyword">true</span>;<br />
+				<span class="comments">// Mar 21, 2011, we refered to the film The Little Thing Called Love.</span><br />
+				<span class="comments">// And I realized something...</span> <br />
+				<span class="comments">// Mar 22, 2011, I told you I love you.</span><br />
+				i.love(u);<br />
+				<span class="comments">// Fortunately, you accepted me.</span><br />
+				u.accept(i);<br />
+				<span class="comments">// You Were far away, we have a long telephone conversation everyday.</span><br />
+				conversation(i, u);<br />
+				<span class="comments">// After a long march, you came to my city.</span><br />
+				i.beTouchedBy(u);<br />
+				<span class="comments">// So my thought is</span><br />
+				<span class="keyword">while</span> (<span class="keyword">false</span>)<br />
+				<span class="placeholder">u.test(i);</span><br />
+				<span class="comments">// But the fact is</span><br />
+				<span class="keyword">while</span> (<span class="keyword">true</span>)<br />
+				<span class="placeholder">u.test(i);</span><br />
+				<span class="comments">//...Revolution is not yet successful, I still need makeing great efforts.</span>
+				i.waitingFor(u);<br />
+			</div>
+			<div id="loveHeart">
+				<canvas id="garden"></canvas>
+				<div id="words">
+					<div id="messages">
+						Cs, I have fallen in love with you for
+						<div id="elapseClock"></div>
+					</div>
+					<div id="loveu">
+						Love u ever and forever.<br/>
+						<div class="signature">- Arthur_Wang</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="copyright">
+			Inspired by <a href="http://www.openrise.com/lab/FlowerPower/">FlowerPower</a> project.<br />
+			Copyright © 2011 <a href='http://hackerzhou.me'>hackerzhou.me</a> 2009-2011
+		</div>
+	</div>	
+	<script type="text/javascript">
+		var offsetX = $("#loveHeart").width() / 2;
+		var offsetY = $("#loveHeart").height() / 2 - 55;
+		var together = new Date();
+		together.setFullYear(2011, 2, 21);
+		together.setHours(0);
+		together.setMinutes(0);
+		together.setSeconds(0);
+		together.setMilliseconds(0);		
+		if (!document.createElement('canvas').getContext) {
+			var msg = document.createElement("div");
+			msg.id = "errorMsg";
+			msg.innerHTML = "Your browser doesn't support HTML5!<br/>Recommend use Chrome 14+/IE 9+/Firefox 7+/Safari 4+"; 
+			document.body.appendChild(msg);
+			$("#code").css("display", "none")
+			$("#copyright").css("position", "absolute");
+			$("#copyright").css("bottom", "10px");
+		    document.execCommand("stop");
+		} else {
+			setTimeout(function () {
+				startHeartAnimation();
+			}, 5000);
+			timeElapse(together);
+			setInterval(function () {
+				timeElapse(together);
+			}, 500);
+			adjustCodePosition();
+			$("#code").typewriter();
+		}
+	</script>	
+</body>
+</html>
