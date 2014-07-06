@@ -9,7 +9,12 @@
       <p class="meta">
         {% include post/date.html %}{{ time }}
         {% if site.disqus_short_name and page.comments != false and post.comments != false and site.disqus_show_comment_count == true %}
+<<<<<<< HEAD
          | <a href="{% if index %}{{ root_url }}{{ post.url }}{% endif %}#disqus_thread">Comments</a>
+=======
+           | <a href="{% if index %}{{ root_url }}{{ post.url }}{% endif %}#disqus_thread"
+             data-disqus-identifier="{% if post.meta.disqus_id %}{{ post.meta.disqus_id }}{% else %}{{ site.url }}{{ post.url }}{% endif %}">Comments</a>
+>>>>>>> 89e8a0f563dfebdadc654b26e0bac21bb414db46
         {% endif %}
       </p>
     {% endunless %}

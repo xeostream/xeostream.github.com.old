@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 89e8a0f563dfebdadc654b26e0bac21bb414db46
 // variables
 var $window = $(window), gardenCtx, gardenCanvas, $garden, garden;
 var clientWidth = $(window).width();
@@ -134,6 +137,7 @@ function adjustCodePosition() {
 
 function showLoveU() {
 	$('#loveu').fadeIn(3000);
+<<<<<<< HEAD
 =======
 // variables
 var $window = $(window), gardenCtx, gardenCanvas, $garden, garden;
@@ -271,4 +275,6 @@ function adjustCodePosition() {
 function showLoveU() {
 	$('#loveu').fadeIn(3000);
 >>>>>>> 760c77fea67df545c250d628cd5473ea25c25b7c
+=======
+>>>>>>> 89e8a0f563dfebdadc654b26e0bac21bb414db46
 }

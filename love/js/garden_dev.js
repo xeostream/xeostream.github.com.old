@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 89e8a0f563dfebdadc654b26e0bac21bb414db46
 	    function Vector(x, y) {
 	        this.x = x;
 	        this.y = y;
@@ -197,6 +200,7 @@
 			} else {
 				return Garden.rgba(r, g, b, a);
 			}
+<<<<<<< HEAD
 =======
 	    function Vector(x, y) {
 	        this.x = x;
@@ -397,4 +401,6 @@
 				return Garden.rgba(r, g, b, a);
 			}
 >>>>>>> 760c77fea67df545c250d628cd5473ea25c25b7c
+=======
+>>>>>>> 89e8a0f563dfebdadc654b26e0bac21bb414db46
 	    };
