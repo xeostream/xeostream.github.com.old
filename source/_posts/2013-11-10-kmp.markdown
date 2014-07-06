@@ -5,7 +5,7 @@ date: 2013-11-10 10:03
 comments: true
 categories: 
 ---
-字符串匹配作为计算机的基本任务，有很多种算法可以高效的匹配字符串，[Knuth-Morris-Pratt算法](http://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm)（简称KMP）是最常用的之一。可是很多人都觉得KMP难以理解，所以我就想试着理出一些头绪，如果能给你一些帮助，那就更好了。
+字符串匹配作为计算机的基本任务，有很多种算法可以高效的匹配字符串，其中[Knuth-Morris-Pratt算法](http://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm)（简称KMP）是最常用的算法之一。可是很多人都觉得KMP难以理解，所以我就想试着理出一些头绪，如果能给你一些帮助，那就更好了。
 <!--more-->
 
 字符串匹配包括模式串和目标串两部分数据，普通的匹配算法需要回溯即不匹配就后退一位，而KMP通过对模式串的分析，避免一些注定失败的匹配过程，使得时间复杂度从(M*N)降低到(M+N)。
