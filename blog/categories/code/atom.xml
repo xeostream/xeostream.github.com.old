@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Code | iostreamin's Blog]]></title>
   <link href="http://xeostream.github.io/blog/categories/code/atom.xml" rel="self"/>
   <link href="http://xeostream.github.io/"/>
-  <updated>2014-12-06T13:37:49+08:00</updated>
+  <updated>2014-12-06T14:39:42+08:00</updated>
   <id>http://xeostream.github.io/</id>
   <author>
     <name><![CDATA[iostreamin]]></name>
@@ -56,7 +56,7 @@
 
 <p>相对于传统的事无巨细的KMP解析过程，这次的解析是从整体的角度来解析KMP算法，有一种高屋建瓴的快感。</p>
 
-<p>仍然通过对目标串S，模式串T的匹配过程来分析。首先改变next数组的定义，<em>next[n] = k，即T[0]~T[k] = T[n-k]~T[n]</em>，跳转算法也要做相应的调整：<em>向后移动的位数 = 当前匹配的字符数 &ndash; next[n] = (n &ndash; k)</em>。</p>
+<p>仍然通过对目标串S，模式串T的匹配过程来分析。首先改变next数组的定义，<em>next[n] = k，即T[0]~T[k] = T[n-k]~T[n]</em>，跳转算法也要做相应的调整：<em>向后移动的位数 = 当前匹配的字符数 - next[n] = (n - k)</em>。</p>
 
 <p>最重要的过程仍然是构造next数组，不同于传统的构造next数组方法的复杂，这次我们采用一种看起来比较简单的方法-<em>通过字符串中前缀与后缀中共有的最长的字符串的长度作为next数组的元素值</em>。</p>
 
@@ -83,70 +83,65 @@
 
 <p>代码：</p>
 
-<p>``` java</p>
-
-<p>/<em>
+<pre><code class="java">
+/*
  * Created-On: 2013-10-11
  * Author: Arthur_Wang
  * KMP point: construct jump array, store short string jump information
- * long, short = &ldquo;BBC ABCDAB ABCDABCDABDE&rdquo;, &ldquo;ABCDABD&rdquo;
- </em>/
-public class KMP {</p>
+ * long, short = "BBC ABCDAB ABCDABCDABDE", "ABCDABD"
+ */
+public class KMP {
+    private String longString, shortString;
+    private int[] jumps;
 
-<pre><code>private String longString, shortString;
-private int[] jumps;
-
-public KMP(String longString, String shortString) {
-    this.longString = longString;
-    this.shortString = shortString;
-    jumps = new int[shortString.length() + 1];
-    jumps[0] = jumps[1] = 0;
-}
-
-public void find() {
-    for (int i = 0; i &lt; shortString.length() - 1; i++)
-        jumps[i + 2] = next(i);
-    for (int i : jumps)
-        System.out.print(i + " ");
-    int i = 0, j = 0;
-    System.out.println("Start");
-    while (i &lt; longString.length() &amp;&amp; j &lt; shortString.length()) {
-        if (longString.charAt(i) == shortString.charAt(j)) {
-            j++;
-            i++;
-        } else if (j == 0)
-            i++;
-        else
-            j = jumps[j];
+    public KMP(String longString, String shortString) {
+        this.longString = longString;
+        this.shortString = shortString;
+        jumps = new int[shortString.length() + 1];
+        jumps[0] = jumps[1] = 0;
     }
-    if (j == shortString.length())
-        System.out.println(i);
-    else
-        System.out.println("failed");
-}
 
-public int next(int index) {
-    if (jumps[index + 1] &gt; 0) {
-        if (shortString.charAt(index + 1) == shortString
-                .charAt(jumps[index + 1]))
-            return jumps[index + 1] + 1;
+    public void find() {
+        for (int i = 0; i &lt; shortString.length() - 1; i++)
+            jumps[i + 2] = next(i);
+        for (int i : jumps)
+            System.out.print(i + " ");
+        int i = 0, j = 0;
+        System.out.println("Start");
+        while (i &lt; longString.length() &amp;&amp; j &lt; shortString.length()) {
+            if (longString.charAt(i) == shortString.charAt(j)) {
+                j++;
+                i++;
+            } else if (j == 0)
+                i++;
+            else
+                j = jumps[j];
+        }
+        if (j == shortString.length())
+            System.out.println(i);
         else
-            next(jumps[jumps[index + 1]]);
+            System.out.println("failed");
     }
-    if (shortString.charAt(0) == shortString.charAt(index + 1))
-        return 1;
-    return 0;
-}
 
-public static void main(String... args) {
-    KMP kmp = new KMP("BBC ABCDAB ABCDABCDABDE", "ABCDABD");
-    kmp.find();
+    public int next(int index) {
+        if (jumps[index + 1] &gt; 0) {
+            if (shortString.charAt(index + 1) == shortString
+                    .charAt(jumps[index + 1]))
+                return jumps[index + 1] + 1;
+            else
+                next(jumps[jumps[index + 1]]);
+        }
+        if (shortString.charAt(0) == shortString.charAt(index + 1))
+            return 1;
+        return 0;
+    }
+
+    public static void main(String... args) {
+        KMP kmp = new KMP("BBC ABCDAB ABCDABCDABDE", "ABCDABD");
+        kmp.find();
+    }
 }
 </code></pre>
-
-<p>}</p>
-
-<p>```</p>
 
 <h2>结论</h2>
 

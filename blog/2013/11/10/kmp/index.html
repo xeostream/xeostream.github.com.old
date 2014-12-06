@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>字符串匹配算法－KMP理解 - iostreamin's Blog</title>
+  <title>字符串匹配算法－KMP理解 - iostreamin&#8217;s Blog</title>
   <meta name="author" content="iostreamin">
 
   
@@ -24,7 +24,6 @@
   <link href="/atom.xml" rel="alternate" title="iostreamin's Blog" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-
   <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
@@ -49,7 +48,7 @@
 
 <body   >
   <header role="banner"><hgroup>
-  <h1><a href="/">iostreamin's Blog</a></h1>
+  <h1><a href="/">iostreamin&#8217;s Blog</a></h1>
   
     <h2>geek for unknown.</h2>
   
@@ -90,14 +89,7 @@
 
 
 
-
-
-
-
-  
-
-
-<time datetime="2013-11-10T10:03:00+08:00" pubdate data-updated="true">Nov 10<sup>th</sup>, 2013</time>
+<time class='entry-date' datetime='2013-11-10T10:03:00+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>10:03 am</span></time>
         
            | <a href="#disqus_thread"
              data-disqus-identifier="http://xeostream.github.io">Comments</a>
@@ -145,7 +137,7 @@
 
 <p>相对于传统的事无巨细的KMP解析过程，这次的解析是从整体的角度来解析KMP算法，有一种高屋建瓴的快感。</p>
 
-<p>仍然通过对目标串S，模式串T的匹配过程来分析。首先改变next数组的定义，<em>next[n] = k，即T[0]~T[k] = T[n-k]~T[n]</em>，跳转算法也要做相应的调整：<em>向后移动的位数 = 当前匹配的字符数 &ndash; next[n] = (n &ndash; k)</em>。</p>
+<p>仍然通过对目标串S，模式串T的匹配过程来分析。首先改变next数组的定义，<em>next[n] = k，即T[0]~T[k] = T[n-k]~T[n]</em>，跳转算法也要做相应的调整：<em>向后移动的位数 = 当前匹配的字符数 - next[n] = (n - k)</em>。</p>
 
 <p>最重要的过程仍然是构造next数组，不同于传统的构造next数组方法的复杂，这次我们采用一种看起来比较简单的方法-<em>通过字符串中前缀与后缀中共有的最长的字符串的长度作为next数组的元素值</em>。</p>
 
@@ -317,14 +309,7 @@
 
 
 
-
-
-
-
-  
-
-
-<time datetime="2013-11-10T10:03:00+08:00" pubdate data-updated="true">Nov 10<sup>th</sup>, 2013</time>
+<time class='entry-date' datetime='2013-11-10T10:03:00+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>10:03 am</span></time>
       
 
 <span class="categories">
@@ -406,7 +391,7 @@
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating...</li>
+    <li class="loading">Status updating&#8230;</li>
   </ul>
   
   <a href="https://github.com/xeostream">@xeostream</a> on GitHub

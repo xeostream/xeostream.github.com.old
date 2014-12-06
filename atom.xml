@@ -4,7 +4,7 @@
   <title><![CDATA[iostreamin's Blog]]></title>
   <link href="http://xeostream.github.io/atom.xml" rel="self"/>
   <link href="http://xeostream.github.io/"/>
-  <updated>2014-12-06T13:37:49+08:00</updated>
+  <updated>2014-12-06T14:39:42+08:00</updated>
   <id>http://xeostream.github.io/</id>
   <author>
     <name><![CDATA[iostreamin]]></name>
@@ -56,7 +56,7 @@
 
 <p>相对于传统的事无巨细的KMP解析过程，这次的解析是从整体的角度来解析KMP算法，有一种高屋建瓴的快感。</p>
 
-<p>仍然通过对目标串S，模式串T的匹配过程来分析。首先改变next数组的定义，<em>next[n] = k，即T[0]~T[k] = T[n-k]~T[n]</em>，跳转算法也要做相应的调整：<em>向后移动的位数 = 当前匹配的字符数 &ndash; next[n] = (n &ndash; k)</em>。</p>
+<p>仍然通过对目标串S，模式串T的匹配过程来分析。首先改变next数组的定义，<em>next[n] = k，即T[0]~T[k] = T[n-k]~T[n]</em>，跳转算法也要做相应的调整：<em>向后移动的位数 = 当前匹配的字符数 - next[n] = (n - k)</em>。</p>
 
 <p>最重要的过程仍然是构造next数组，不同于传统的构造next数组方法的复杂，这次我们采用一种看起来比较简单的方法-<em>通过字符串中前缀与后缀中共有的最长的字符串的长度作为next数组的元素值</em>。</p>
 

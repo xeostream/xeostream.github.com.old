@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Study | iostreamin's Blog]]></title>
   <link href="http://xeostream.github.io/blog/categories/study/atom.xml" rel="self"/>
   <link href="http://xeostream.github.io/"/>
-  <updated>2014-12-06T13:37:49+08:00</updated>
+  <updated>2014-12-06T14:39:42+08:00</updated>
   <id>http://xeostream.github.io/</id>
   <author>
     <name><![CDATA[iostreamin]]></name>
@@ -71,23 +71,37 @@ indexer_binary_name: indexer
 ...
 </code>
 2.在bash中，cd到当前rails项目目录下，运行命令：
-```sh <br/>
-rake ts:index #为配置的model建立索引
-如果有报段错误之类的，这说明之前生成的中文字典出现问题，需要重新生成中文字典，在bash中重新进入到mmseg/data文件夹下</p>
-
-<p>python build_unigram.py char.stat.txt Lexicon_full_words.txt > unigram.txt
-mmseg -u unigram.txt #此命令会生成unigram.txt.uni
-<code>
-将生成的unigram.txt.uni重命名为uni.lib,将其复制到coreseek的安装目录/var/data/&lt;br&gt;
-再次运行命令:
-</code>sh
-rake ts:index
-<code>
-配置的model的索引应该就成功建立。&lt;br&gt;
-3.开启coreseek服务，可以在rails项目的console下运行search方法进行全文检索。
-</code>sh
-rake ts:start
-```   <br/>
+<figure class='code'><figcaption><span><br/></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>rake ts:index <span class="c">#为配置的model建立索引</span>
+</span><span class='line'>如果有报段错误之类的，这说明之前生成的中文字典出现问题，需要重新生成中文字典，在bash中重新进入到mmseg/data文件夹下&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;python build_unigram.py char.stat.txt Lexicon_full_words.txt &gt; unigram.txt
+</span><span class='line'>mmseg -u unigram.txt <span class="c">#此命令会生成unigram.txt.uni</span>
+</span><span class='line'>&lt;code&gt;
+</span><span class='line'>将生成的unigram.txt.uni重命名为uni.lib,将其复制到coreseek的安装目录/var/data/<span class="p">&amp;</span>lt<span class="p">;</span>br<span class="p">&amp;</span>gt<span class="p">;</span>
+</span><span class='line'>再次运行命令:
+</span><span class='line'>&lt;/code&gt;sh
+</span><span class='line'>rake ts:index
+</span><span class='line'>&lt;code&gt;
+</span><span class='line'>配置的model的索引应该就成功建立。<span class="p">&amp;</span>lt<span class="p">;</span>br<span class="p">&amp;</span>gt<span class="p">;</span>
+</span><span class='line'>3.开启coreseek服务，可以在rails项目的console下运行search方法进行全文检索。
+</span><span class='line'>&lt;/code&gt;sh
+</span><span class='line'>rake ts:start
+</span></code></pre></td></tr></table></div></figure>   <br/>
 这些天一直在看coreseek配置，由于coreseek的官网无法访问，所以其中曲折只有亲身体会才会知道，本人才疏学浅，如有异议，还请不吝赐教。  <br/>
 <a href="http://xeostream.github.com/blog/2013/03/26/rails-coreseek">版权所有</a>，欢迎转载注明出处与作者。</p>
 ]]></content>
