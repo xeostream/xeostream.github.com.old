@@ -1,0 +1,305 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>RubyOnRails学习之rails框架 - iostreamin's Blog</title>
+  <meta name="author" content="iostreamin">
+
+  
+  <meta name="description" content="rails是基于MVC的web框架，model对应于active record，controller对应于action controller，view对应于action view。 Active record与model modle对应的active record 继承于ActiveRecord &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://xeostream.github.io/blog/2013/03/16/rubyonrails-one">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="iostreamin's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-39665397-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">iostreamin's Blog</a></h1>
+  
+    <h2>geek for unknown.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:xeostream.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">RubyOnRails学习之rails框架</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-16T17:58:00+08:00" pubdate data-updated="true">Mar 16<sup>th</sup>, 2013</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://xeostream.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>rails是基于MVC的web框架，model对应于active record，controller对应于action controller，view对应于action view。</p>
+
+<!--more-->
+
+
+<h2>Active record与model</h2>
+
+<p>modle对应的active record 继承于ActiveRecord::Base，类似于Hibernate，原理是利用文件名自动查找对应的业务对象与数据库中的表，由于数据的持久化，在每个表对应的唯一一个active record中声明表中每列的属性，这个过程需要一一对应。建立active record对象有两种方法；一，通过new()方法建立，这种方法声明的active record对象不会提交给数据库，所以无法在数据库中得到体现；二，通过create()方法声明的对象可以做到active record与数据库的同步。声明对象时需要给对象的属性赋值，赋值方法主要为在声明对象的同时传入hash或者是代码块。rails的ORM不需要像Java中SSH的大量配置文件，这要归功于“约定大于配置”理念。rails的数据库的配置需要到项目下config/database.yml中配置，数据库的表名是active record的类名的复数形式，例:catalogs-Catalog，这些可以在ActiveRecord：Base基类提供的方法中设置。</p>
+
+<h2>Action controller与controller</h2>
+
+<p>controller对应的action controller继承于ActionController::Base，每个controller都有一个或者多个action(方法)，action构成所有的业务逻辑，action负责模版绘制，重定向，文本编辑等等。首先视图中的模块通过dispatcher连接到对应的controller，controller的处理过程是获得:action的键值，调用指定的action。每个action对应的模版在app/views/controllername目录下，名字相互对应，如果没有缺省的action和模版，就调用名为index的action，action每次只能完成一次绘制或者重定向。</p>
+
+<h2>Action view与view</h2>
+
+<p>view对应于action view继承于ActionView::Base，而ActionView::Base定义了三种模版。</p>
+
+<blockquote><p>.rhtml文件，ruby代码嵌入html代码中，&lt;% %>是嵌入的ruby处理代码，&lt;=>是要显示的数据。<br>
+.rxml文件，生成xml文件。<br>
+.rjs文件，通过JavaScriptGenerator的对象page的方法对相应的html文件惊醒修改，这和rails的Ajax有关，之后我们在详细讨论。<br><br>
+<a href="http://xeostream.github.com/blog/2013/03/16/rubyonrails-one">版权所有</a>，欢迎转载注明出处与作者。</p></blockquote>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">iostreamin</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-16T17:58:00+08:00" pubdate data-updated="true">Mar 16<sup>th</sup>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ror/'>ror</a>, <a class='category' href='/blog/categories/study/'>study</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/03/10/TDD/" title="Previous Post: Test Driven Development/TDD">&laquo; Test Driven Development/TDD</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/03/26/rails-coreseek/" title="Next Post: coreseek配置rails项目全文搜索">coreseek配置rails项目全文搜索 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <p>Jianshuang Wang</p>
+  <p>Email:<a href="mailto:iostreamin@gmail.com">iostremin@gmail.com</a></p>
+  <p>study in Software Engineering of Southeast University,devote to Java,Ruby,Web development,Algorithm,OpenSource..
+</section>
+<section>
+  <h1>Tag Cloud</h1>
+    <span id="tag-cloud"><a href='/blog/categories/algorithm' style='font-size: 130.0%'>algorithm(1)</a> <a href='/blog/categories/code' style='font-size: 130.0%'>code(1)</a> <a href='/blog/categories/concept' style='font-size: 130.0%'>concept(1)</a> <a href='/blog/categories/ror' style='font-size: 160.0%'>ror(2)</a> <a href='/blog/categories/study' style='font-size: 160.0%'>study(2)</a> <a href='/blog/categories/test' style='font-size: 130.0%'>test(1)</a> <a href='/blog/categories/tutorial' style='font-size: 130.0%'>tutorial(1)</a> </span>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/10/kmp/">字符串匹配算法－KMP理解</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/15/moses-one/">Mint15安装moses教程</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/03/26/rails-coreseek/">Coreseek配置rails项目全文搜索</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/03/16/rubyonrails-one/">RubyOnRails学习之rails框架</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/03/10/TDD/">Test Driven Development/TDD</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/03/03/first-blog/">First Blog</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/xeostream">@xeostream</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'xeostream',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - iostreamin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'iostreaminsblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://xeostream.github.io/blog/2013/03/16/rubyonrails-one/';
+        var disqus_url = 'http://xeostream.github.io/blog/2013/03/16/rubyonrails-one/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
