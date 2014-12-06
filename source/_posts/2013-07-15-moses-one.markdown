@@ -3,7 +3,7 @@ layout: post
 title: "Mint15安装moses教程"
 date: 2013-07-15 21:10
 comments: true
-categories: 
+categories: Tutorial
 ---
 我的系统是Linux Mint15，64位的系统，gcc的版本是4.7.3，之后我将以此系统为例演示编译配置moses的步骤。
 <!--more-->

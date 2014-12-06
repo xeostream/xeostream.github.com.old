@@ -3,7 +3,7 @@ layout: post
 title: "RubyOnRails学习之rails框架"
 date: 2013-03-16 17:58
 comments: true
-categories: 
+categories: [Study, ROR]
 ---
 rails是基于MVC的web框架，model对应于active record，controller对应于action controller，view对应于action view。
 <!--more-->

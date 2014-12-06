@@ -3,7 +3,7 @@ layout: post
 title: "coreseek配置rails项目全文搜索"
 date: 2013-03-26 22:07
 comments: true
-categories: 
+categories: [Study, ROR]
 ---
 rails是ruby的web框架，由于rails框架的易用性，近几年出现了很多基于rails的网站，随着网站的发展，积累的数据会越来越多，有的时候我们可能要给网站升级，比如增加全文搜索功能，那就要用到我们说到的coreseek软件，coreseek是一款中文全文检索软件，coreseek本身是基于sphinx开发的，接下来介绍coreseek的安装与配置(需要安装包的可以给我留言)。
 <!--more-->
