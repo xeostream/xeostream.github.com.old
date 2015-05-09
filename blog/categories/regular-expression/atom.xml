@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Regular Expression | iostreamin's Blog]]></title>
+  <link href="http://xeostream.github.io/blog/categories/regular-expression/atom.xml" rel="self"/>
+  <link href="http://xeostream.github.io/"/>
+  <updated>2015-05-09T12:00:04+08:00</updated>
+  <id>http://xeostream.github.io/</id>
+  <author>
+    <name><![CDATA[iostreamin]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[正则表达式语法小结]]></title>
+    <link href="http://xeostream.github.io/blog/2015/05/09/regular-expression/"/>
+    <updated>2015-05-09T11:43:11+08:00</updated>
+    <id>http://xeostream.github.io/blog/2015/05/09/regular-expression</id>
+    <content type="html"><![CDATA[<p>正则表达式（Regular Expression）使用单个字符串来描述、匹配一系列符合某个句法规则的字符串。正则表达式通常被用来检索、替换符合模式的文本。正则表达式最早出现在出现在理论计算机科学的自动控制理论中，后来被Unix系统上的编辑器ed使用，并最终发展为grep命令。最后，正则表达式被广泛使用在大多数编程语言中。</p>
+
+<!--more-->
+
+
+<h2>基本语法</h2>
+
+<p>一个正则表达式通常被称为一个模式，被用来描述、匹配一系列符合某个句法规则的字符串。正则表达式语法包括：</p>
+
+<ul>
+<li><strong>字面值</strong>，没有任何转义，查找的对象就是其本身。比如正则表达式abc，匹配的结果就是a、b、c三个字母连在一起的字符串。</li>
+<li><strong><code>.</code></strong>，匹配除换行符外的任意字符。</li>
+<li><code>[]</code>，中括号这种形式被称为字符类。在正则表达式中，一些字符被<code>[]</code>符号括住，它们表示被括号中属性约束的字符。需要注意两点：
+
+<ol>
+<li>在字符类中字符的顺序和重复性是没有意义的；</li>
+<li><code>.</code>在字符类中表示的就是其本身。</li>
+</ol>
+</li>
+<li><strong><code>-</code></strong>，为区间符号，表示在给定的范围内取值。<code>[0123456789]</code>与<code>[0-9]</code>是相同的，区间的范围应该是有意义的，<code>[a-1]</code>虽然没有语法错误，但是没有任何意义。区间左右两端对应的是字符，并不是数字，<code>[2-41]</code>?</li>
+<li><strong><code>^</code></strong>，为取反符号，取反符号必须在<code>[]</code>中使用，取反符号是将后面的整体作为取反条件的。</li>
+<li><strong><code>{}</code></strong>，为乘法集，以前面的整体作为乘法条件。乘法集区间有如下特点：
+
+<ol>
+<li>乘法集的“越长越好”属性，对于字符串<code>aaaabb</code>，正则表达式<code>a{2,4}</code>会匹配<code>aaaa</code>；</li>
+<li>乘法集的“全部获取”属性，对于字符串<code>aabbaaaab</code>，正则表达式<code>a{2,4}</code>会匹配<code>aa</code>和<code>aaaa</code>；</li>
+<li>乘法集区间支持开区间，<code>a{1,}</code>是合法的。</li>
+</ol>
+</li>
+<li><strong><code>?</code></strong>，为判断符号，同<code>{0,1}</code>。当该字符紧跟在任何一个其他限制符（<code>*</code>,<code>+</code>,<code>?</code>，<code>{n}</code>，<code>{n,}</code>，<code>{n,m}</code>）后面时，匹配模式是非贪婪的。非贪婪模式尽可能少的匹配所搜索的字符串，而默认的贪婪模式则尽可能多的匹配所搜索的字符串。例如，对于字符串<code>oooo</code>，<code>o+?</code>将匹配单个<code>o</code>，而<code>o+</code>将匹配所有<code>o</code>。</li>
+<li><strong><code>*</code></strong>，为通配符号，同<code>{0,}</code>。</li>
+<li><strong><code>+</code></strong>，同<code>{1,}</code>。</li>
+<li><strong><code>|</code></strong>，为或符号，表示或的关系,<code>abc|edf</code>表示匹配<code>abc</code>或者<code>edf</code>。</li>
+<li><strong><code>()</code></strong>，表示组合，也可以理解为高优先级匹配。</li>
+<li><strong><code>\b</code></strong>，表示单词的边界，也就是指单词和空格间的位置。例如，<code>er\b</code>可以匹配<code>never</code>中的<code>er</code>，但不能匹配<code>verb</code>中的<code>er</code>。</li>
+<li><strong><code>\B</code></strong>，匹配非单词边界。<code>er\B</code>能匹配<code>verb</code>中的<code>er</code>，但不能匹配<code>never</code>中的<code>er</code>。</li>
+<li><strong><code>cx</code></strong>，匹配由x指明的控制字符。例如，<code>\cM</code>匹配一个Control-M或回车符。x的值必须为A-Z或a-z之一。否则，将c视为一个原义的c字符。</li>
+<li><strong><code>\d</code></strong>，匹配一个数字字符。等价于<code>[0-9]</code>。</li>
+<li><strong><code>\D</code></strong>，匹配一个非数字字符。等价于<code>[^0-9]</code>。</li>
+<li><strong><code>\f</code></strong>，匹配一个换页符。等价于<code>\x0c</code>和<code>\cL</code>。</li>
+<li><strong><code>\n</code></strong>，匹配一个换行符。等价于<code>\x0a</code>和<code>\cJ</code>。</li>
+<li><strong><code>\r</code></strong>，匹配一个回车符。等价于<code>\x0d</code>和<code>\cM</code>。</li>
+<li><strong><code>\s</code></strong>，匹配任何空白字符，包括空格、制表符、换页符等等。等价于<code>[ \f\n\r\t\v]</code>。</li>
+<li><strong><code>\S</code></strong>，匹配任何非空白字符。等价于<code>[^ \f\n\r\t\v]</code>。</li>
+<li><strong><code>\t</code></strong>，匹配一个制表符。等价于<code>\x09</code>和<code>\cI</code>。</li>
+<li><strong><code>\v</code></strong>，匹配一个垂直制表符。等价于<code>\x0b</code>和<code>\cK</code>。</li>
+<li><strong><code>\w</code></strong>，匹配包括下划线的任何单词字符。等价于<code>[A-Za-z0-9_]</code>。</li>
+<li><strong><code>\W</code></strong>，匹配任何非单词字符。等价于<code>[^A-Za-z0-9_]</code>。</li>
+<li><strong><code>\xn</code></strong>，匹配n，其中n为十六进制转义值。十六进制转义值必须为确定的两个数字长。例如，<code>\x41</code>匹配<code>A</code>。正则表达式中可以使用ASCII编码。</li>
+<li><strong><code>^$</code></strong>，<strong><code>^</code></strong>表示行的开头，<code>$</code>表示行的结尾。</li>
+<li><strong><code>\</code></strong>，转义字符。</li>
+</ul>
+
+
+<h2>高（奇）级（技）语（淫）法（巧）</h2>
+
+<p>下面介绍的是一些正则表达式中比较生僻，但是也非常有用的用法。</p>
+
+<ul>
+<li><strong><code>(pattern)</code></strong>，匹配pattern并获取这一匹配的子字符串。该子字符串用于向后引用。所获取的匹配可以从产生的Matches集合得到。</li>
+<li><strong><code>(?:pattern)</code></strong>，匹配pattern但不获取匹配的子字符串，也就是说这是一个非获取匹配，不存储匹配的子字符串用于向后引用。这在使用或字符<code>(|)</code>来组合一个模式的各个部分是很有用。例如<code>industr(?:y|ies)</code>就是一个比<code>industry|industries</code>更简略的表达式。</li>
+<li><strong><code>(?=pattern)</code></strong>，<strong>正向肯定预查</strong>，在任何匹配pattern的字符串开始处匹配查找字符串。这是一个非获取匹配，也就是说，该匹配不需要获取供以后使用。例如，<code>Windows(?=95|98|NT|2000)</code>能匹配<code>Windows2000</code>中的<code>Windows</code>，但不能匹配<code>Windows3.1</code>中的<code>Windows</code>。预查不消耗字符，也就是说，在一个匹配发生后，在最后一次匹配之后立即开始下一次匹配的搜索，而不是从包含预查的字符之后开始。</li>
+<li><strong><code>(?!pattern)</code></strong>，<strong>正向否定预查</strong>，在任何不匹配pattern的字符串开始处匹配查找字符串。这是一个非获取匹配，也就是说，该匹配不需要获取供以后使用。例如<code>Windows(?!95|98|NT|2000)</code>能匹配<code>Windows3.1</code>中的<code>Windows</code>，但不能匹配<code>Windows2000</code>中的<code>Windows</code>。预查不消耗字符，也就是说，在一个匹配发生后，在最后一次匹配之后立即开始下一次匹配的搜索，而不是从包含预查的字符之后开始</li>
+<li><strong><code>(?&lt;=pattern)</code></strong>，<strong>反向肯定预查</strong>，与正向肯定预查类似，只是方向相反。例如，<code>(?&lt;=95|98|NT|2000)Windows</code>能匹配<code>2000Windows</code>中的<code>Windows</code>，但不能匹配<code>3.1Windows</code>中的<code>Windows</code>。</li>
+<li><strong><code>(?&lt;!pattern)</code></strong>，<strong>反向否定预查</strong>，与正向否定预查类似，只是方向相反。例如<code>(?&lt;!95|98|NT|2000)Windows</code>能匹配<code>3.1Windows</code>中的<code>Windows</code>，但不能匹配<code>2000Windows</code>中的<code>Windows</code>。</li>
+</ul>
+
+
+<h2>贪婪匹配和懒惰匹配</h2>
+
+<p>当正则表达式中包含能接受重复的限定符时，在使整个表达式能得到匹配的前提下，通常的行为是匹配尽可能多的字符。以<code>a.*b</code>为例，它会匹配最长的以<code>a</code>开始，以<code>b</code>结束的字符串。如果用它来搜索<code>aabab</code>的话，会匹配整个字符串，这被称为<strong>贪婪匹配</strong>。</p>
+
+<p>但是有时我们需要匹配尽可能少的字符-<strong>懒惰匹配</strong>。贪婪匹配可以转化为懒惰匹配，只需要在表达式中增加一个问号<code>？</code>。这样<code>.*?</code>就意味着匹配任意数量的重复，但是在能使匹配成功的前提下使用最少的重复。<code>a.*?b</code>匹配最短的，以<code>a</code>开始，以<code>b</code>结束的字符串。如果把它用于匹配<code>aabab</code>的话，会匹配<code>aab</code>和<code>ab</code>。</p>
+
+<h2>参考资料</h2>
+
+<ul>
+<li><a href="http://zh.wikipedia.org/zh/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F">正则表达式-维基百科</a></li>
+<li><a href="http://deerchao.net/tutorials/regex/regex.htm">正则表达式30分钟入门教程</a></li>
+<li><a href="http://msdn.microsoft.com/zh-cn/library/ae5bf541(v=vs.100).aspx">MSDN正则表达式语法介绍</a></li>
+</ul>
+
+
+<p>声明：欢迎转载，请注明出处。</p>
+]]></content>
+  </entry>
+  
+</feed>
