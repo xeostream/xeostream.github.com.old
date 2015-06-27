@@ -1,0 +1,470 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>字符串匹配算法－KMP理解 - iostreamin&#8217;s Blog</title>
+  <meta name="author" content="iostreamin">
+
+  
+  <meta name="description" content="字符串匹配作为计算机的基本任务，有很多种算法可以高效的匹配字符串，其中Knuth-Morris-Pratt算法（简称KMP）是最常用的算法之一。可是很多人都觉得KMP难以理解，所以我就想试着理出一些头绪，如果能给你一些帮助，那就更好了。 字符串匹配包括模式串和目标串两部分数据， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://xeostream.github.io/blog/2013/11/10/kmp/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="iostreamin's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-39665397-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">iostreamin&#8217;s Blog</a></h1>
+  
+    <h2>geek for unknown.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="xeostream.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/love/love.html">myLove</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">字符串匹配算法－KMP理解</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2013-11-10T10:03:00-06:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>10:03 am</span></time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://xeostream.github.io">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>字符串匹配作为计算机的基本任务，有很多种算法可以高效的匹配字符串，其中<a href="http://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm">Knuth-Morris-Pratt算法</a>（简称KMP）是最常用的算法之一。可是很多人都觉得KMP难以理解，所以我就想试着理出一些头绪，如果能给你一些帮助，那就更好了。</p>
+
+<!--more-->
+
+
+<p>字符串匹配包括模式串和目标串两部分数据，普通的匹配算法需要回溯即不匹配就后退一位，而KMP通过对模式串的分析，避免一些注定失败的匹配过程，使得时间复杂度从(M*N)降低到(M+N)。</p>
+
+<p>KMP算法的高效性就在于next数组记录了当前字符不匹配的情况下模式串如何跳转，根据next数组记录的第一个元素的不同可以将KMP算法通过两种方式分析，第一种是传统的方式,next[0] = -1;第二种是最近看到的理解，next[0] = 0。接下来具体分析两种观点。</p>
+
+<h2>传(晦)统(涩)的KMP算法解析</h2>
+
+<p>传统的KMP算法中next数组的含义是当前位置的模式串字符与目标串字符不同时，模式串将要跳转的位置。举个例子，目标串S = ”abcabcabdabba”，模式串T = “abcabd”，然后构造next数组，算法如下:</p>
+
+<ol>
+<li>next[0] = -1，意义：任何模式串next的第一位都是-1。</li>
+<li>next[j] = k，意义：<em>T[0]~T[k-1] = T[j-k]~T[j-1]且T[k] != T[j]</em> <strong>(1 &lt;= k &lt; j)</strong>。</li>
+<li>next[j] = -1，意义：<em>T[0]~T[k-1] = T[j-k]~T[j-1]且T[k] = T[j]</em> <strong>(1 &lt;= k &lt; j)</strong>。</li>
+<li>next[j] = 0，意义：除上述情况的其他情况。</li>
+</ol>
+
+
+<p>根据上述算法，可以得到T的next数组next[0] = -1，next[1] = 0是毫无疑问的；next[2] = 0，因为“ab”没有相同的子串；next[3] = 0，因为“abc”没有相同的子串；next[4] = -1，因为T[0] = T[3]且T[1] = T[4]；next[5] = 2,因为T[0]T[1] = T[3]T[4]。</p>
+
+<p>在得到next数组之后如何跳转呢，这就是接下来要解决的问题。假设S和T匹配发现在S[m] != T[n]，对应到next[n]的三种情况，如下：</p>
+
+<ul>
+<li>next[n] = -1，即<em>T[0] = T[n]</em>，由于T[n] != S[m]，所以比较<strong>S[m+1] == T[0]</strong>。</li>
+<li>next[n] = 0，即<em>T[0] != T[n]</em>，比较<strong>S[m] == T[0]</strong>。</li>
+<li>next[n] = k (1 &lt;= k &lt; n)，即<em>T[0]~T[k-1] = T[n-k]~T[n-1] = S[m-k]~S[m-1]</em>，比较<strong>S[m] == T[k]</strong>。</li>
+</ul>
+
+
+<p>可以看出，传(晦)统(涩)的的KMP思路不复杂但是不太清晰，再加上很多教材上对next数组解释不清和一些莫名其妙的递归过程求next数组，使得我们很容易迷惑。</p>
+
+<h2>新(聪)颖(明)的KMP算法解析</h2>
+
+<p>相对于传统的事无巨细的KMP解析过程，这次的解析是从整体的角度来解析KMP算法，有一种高屋建瓴的快感。</p>
+
+<p>仍然通过对目标串S，模式串T的匹配过程来分析。首先改变next数组的定义，<em>next[n] = k，即T[0]~T[k] = T[n-k]~T[n]</em>，跳转算法也要做相应的调整：<em>向后移动的位数 = 当前匹配的字符数 - next[n] = (n - k)</em>。</p>
+
+<p>最重要的过程仍然是构造next数组，不同于传统的构造next数组方法的复杂，这次我们采用一种看起来比较简单的方法-<em>通过字符串中前缀与后缀中共有的最长的字符串的长度作为next数组的元素值</em>。</p>
+
+<p>首先解释下前缀和后缀的概念：</p>
+
+<blockquote><p><strong>字符串：bread</strong></p>
+
+<p><strong>前缀：b，br，bre，brea</strong></p>
+
+<p><strong>后缀：d，ad，ead，read</strong></p></blockquote>
+
+<p>如果模式串T = “ABCDABD”，构造next数组：</p>
+
+<ul>
+<li>“A”前缀和后缀都为空集，共有的为空，则next[0] = 0</li>
+<li>“AB”前缀为[A]，后缀为[B]，共有的为空，则next[1] = 0</li>
+<li>“ABC”前缀为[A，AB]，后缀为[C，BC]，共有的为空，则next[2] = 0</li>
+<li>“ABCD”前缀为[A，AB，ABC]，后缀为[D，CD，BCD]，共有的为空，则next[3] = 0</li>
+<li>“ABCDA”前缀为[A，AB，ABC，ABCD]，后缀为[A，DA，CDA，BCDA]，共有的为[A]，则next[4] = 1</li>
+<li>“ABCDAB”前缀为[A，AB，ABC，ABCD，ABCDA]，后缀为[B，AB，DAB，CDAB，BCDAB]，共有的为[AB]，next[5] = 2</li>
+<li>“ABCDABD”前缀为[A，AB，ABC，ABCD，ABCDA，ABCDAB]，后缀为[D，BD，ABD，DABD，CDABD，BCDABD]，共有的为空，则next[6] = 0</li>
+</ul>
+
+
+<p>代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm"> * Created-On: 2013-10-11</span>
+</span><span class='line'><span class="cm"> * Author: Arthur_Wang</span>
+</span><span class='line'><span class="cm"> * KMP point: construct jump array, store short string jump information</span>
+</span><span class='line'><span class="cm"> * long, short = &quot;BBC ABCDAB ABCDABCDABDE&quot;, &quot;ABCDABD&quot;</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KMP</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">longString</span><span class="o">,</span> <span class="n">shortString</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">jumps</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">KMP</span><span class="o">(</span><span class="n">String</span> <span class="n">longString</span><span class="o">,</span> <span class="n">String</span> <span class="n">shortString</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">longString</span> <span class="o">=</span> <span class="n">longString</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">shortString</span> <span class="o">=</span> <span class="n">shortString</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">jumps</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">shortString</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">];</span>
+</span><span class='line'>      <span class="n">jumps</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="n">jumps</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">find</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">shortString</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span><span class='line'>          <span class="n">jumps</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="o">]</span> <span class="o">=</span> <span class="n">next</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">:</span> <span class="n">jumps</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="s">&quot; &quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">,</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Start&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">longString</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">shortString</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">longString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">==</span> <span class="n">shortString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">j</span><span class="o">++;</span>
+</span><span class='line'>              <span class="n">i</span><span class="o">++;</span>
+</span><span class='line'>          <span class="o">}</span> <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
+</span><span class='line'>              <span class="n">i</span><span class="o">++;</span>
+</span><span class='line'>          <span class="k">else</span>
+</span><span class='line'>              <span class="n">j</span> <span class="o">=</span> <span class="n">jumps</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">==</span> <span class="n">shortString</span><span class="o">.</span><span class="na">length</span><span class="o">())</span>
+</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;failed&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">next</span><span class="o">(</span><span class="kt">int</span> <span class="n">index</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">jumps</span><span class="o">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">shortString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">==</span> <span class="n">shortString</span>
+</span><span class='line'>                  <span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">jumps</span><span class="o">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]))</span>
+</span><span class='line'>              <span class="k">return</span> <span class="n">jumps</span><span class="o">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>          <span class="k">else</span>
+</span><span class='line'>              <span class="nf">next</span><span class="o">(</span><span class="n">jumps</span><span class="o">[</span><span class="n">jumps</span><span class="o">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]]);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">shortString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">==</span> <span class="n">shortString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">))</span>
+</span><span class='line'>          <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">KMP</span> <span class="n">kmp</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">KMP</span><span class="o">(</span><span class="s">&quot;BBC ABCDAB ABCDABCDABDE&quot;</span><span class="o">,</span> <span class="s">&quot;ABCDABD&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">kmp</span><span class="o">.</span><span class="na">find</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>结论</h2>
+
+<p>有的读者可能已经看出来上文两种方法其实没有本质的不同，最大的区别在于两者构造next数组的过程，第二种方式从整体上考虑模式串的特征，直观看起来更容易理解，如果有不同看法，欢迎交流！</p>
+
+<p>参考资料</p>
+
+<ul>
+<li><a href="http://blog.csdn.net/merlin_q/article/details/6707990">KMP</a></li>
+<li><a href="http://blog.jobbole.com/39066/">字符串匹配的KMP算法</a></li>
+</ul>
+
+
+<p>声明：欢迎转载，请注明出处。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">iostreamin</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2013-11-10T10:03:00-06:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>10:03 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/algorithm/'>algorithm</a>, <a class='category' href='/blog/categories/code/'>code</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/07/15/moses-one/" title="Previous Post: Mint15安装moses教程">&laquo; Mint15安装moses教程</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/05/08/regular-expression/" title="Next Post: 正则表达式语法小结">正则表达式语法小结 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <p>Jianshuang Wang</p>
+  <p>Email:<a href="mailto:iostreamin@gmail.com">iostremin@gmail.com</a></p>
+  <p>study in Software Engineering of Southeast University,devote to Java,Ruby,Web development,Algorithm,OpenSource..
+</section>
+<section>
+  <h1>Tag Cloud</h1>
+    <span id="tag-cloud"><a href='/blog/categories/algorithm' style='font-size: 130.0%'>algorithm(1)</a> <a href='/blog/categories/code' style='font-size: 130.0%'>code(1)</a> <a href='/blog/categories/concept' style='font-size: 130.0%'>concept(1)</a> <a href='/blog/categories/java8' style='font-size: 130.0%'>java8(1)</a> <a href='/blog/categories/regular-expression' style='font-size: 130.0%'>regular expression(1)</a> <a href='/blog/categories/ror' style='font-size: 160.0%'>ror(2)</a> <a href='/blog/categories/study' style='font-size: 160.0%'>study(2)</a> <a href='/blog/categories/test' style='font-size: 130.0%'>test(1)</a> <a href='/blog/categories/tutorial' style='font-size: 130.0%'>tutorial(1)</a> </span>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/05/17/java8/">Java8入门</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/08/regular-expression/">正则表达式语法小结</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/10/kmp/">字符串匹配算法－KMP理解</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/15/moses-one/">Mint15安装moses教程</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/03/26/rails-coreseek/">Coreseek配置rails项目全文搜索</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/03/16/rubyonrails-one/">RubyOnRails学习之rails框架</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/03/10/TDD/">Test Driven Development/TDD</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/03/03/first-blog/">First Blog</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/xeostream">@xeostream</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'xeostream',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - iostreamin -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'iostreaminsblog';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://xeostream.github.io/blog/2013/11/10/kmp/';
+        var disqus_url = 'http://xeostream.github.io/blog/2013/11/10/kmp/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

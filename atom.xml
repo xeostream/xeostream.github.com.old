@@ -1,0 +1,1198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[iostreamin's Blog]]></title>
+  <link href="http://xeostream.github.io/atom.xml" rel="self"/>
+  <link href="http://xeostream.github.io/"/>
+  <updated>2015-06-26T23:49:06-05:00</updated>
+  <id>http://xeostream.github.io/</id>
+  <author>
+    <name><![CDATA[iostreamin]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Java8入门]]></title>
+    <link href="http://xeostream.github.io/blog/2015/05/17/java8/"/>
+    <updated>2015-05-17T08:41:09-05:00</updated>
+    <id>http://xeostream.github.io/blog/2015/05/17/java8</id>
+    <content type="html"><![CDATA[<p>Java 8发布已经有一段时间了，总体上说Java 8本身是很有诚意的，带来了很多变化。从目前来看，各大Java开源社区和开源软件对Java 8还是比较欢迎的。Spring在Java 8发布后就推出了兼容Java 8的新版本。从开源软件和开发人员的反馈来看，Java 8应该会逐渐替代旧版本成为Java开发的新基石。</p>
+
+<!-- more -->
+
+
+<p>Java 8的更新给Java应用带来了很多显著的变化。主要更新包括<strong>Lambda表达式</strong>、<strong>接口的默认方法和静态方法</strong>、<strong>方法引用</strong>、<strong>Java库的新特性-Optional，Stream，日期时间API</strong>、<strong>并行运算</strong>等等，这些更新解决了Java本身固有的一些缺陷，也带来了更加有效的API。</p>
+
+<h2>Lambda表达式</h2>
+
+<p>Lambda表达式（闭包）是Java 8中最显著的更新，Lambda的概念是将一段代码作为参数传给方法，在方法中执行，这种概念在脚本语言如Python中应用十分普遍，即使在基于JVM的一些语言也支持Lambda表达式，但是Java程序中只能通过匿名内部类来替代Lambda的作用。</p>
+
+<p>Lambda表达式的格式非常紧凑，最简单的Lambda表达式可以由<strong>逗号分隔的参数列表</strong>、<strong>->运算符</strong> 和 <strong>功能语句块</strong>组成。示例如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="s">&quot;a&quot;</span><span class="o">,</span> <span class="s">&quot;b&quot;</span><span class="o">,</span> <span class="s">&quot;d&quot;</span><span class="o">).</span><span class="na">forEach</span><span class="o">(</span><span class="n">s</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">s</span><span class="o">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在参数列表中可以不声明参数类型，编译器会根据上下文判断参数类型，或者也可以显式的指定参数类型。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="s">&quot;a&quot;</span><span class="o">,</span> <span class="s">&quot;b&quot;</span><span class="o">,</span> <span class="s">&quot;d&quot;</span><span class="o">).</span><span class="na">forEach</span><span class="o">((</span><span class="n">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">s</span><span class="o">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lambda表达式中如果语句块过于复杂，也可以通过大括号包起来使结构清晰，Lambda表达式可以引用外部变量，而且Lambda表达式同样可以有返回值，编译器会根据上下文推断返回值的类型，所以我个人理解Lambda表达式其实就是匿名的方法。</p>
+
+<p>如果Lambda表达式仅仅是上面的应用场景，估计很多同学会觉得Lambda表达式的作用就是精简代码，作为Java 8的重大更新未免言过其实。事实上，Lambda表达式的作用是很大的，除了精简代码、并行处理支持CPU多核运算、有利于JIT编译器优化代码外，还有传递行为的特性。</p>
+
+<p>Java死板的接口规范降低了开发人员的入门难度，但很大的副作用是限制了使用场景，不便扩展。就像代码所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// 计算数组元素之和</span>
+</span><span class='line'><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">int</span> <span class="nf">sumAll</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">number</span> <span class="o">:</span> <span class="n">numbers</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">total</span> <span class="o">+=</span> <span class="n">number</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">total</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>sumAll()</code>方法很简单，计算数组中所有元素的和，然后我们增加了一个需求-计算数组中所有偶数的和：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// 计算数组中所有偶数之和</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">int</span> <span class="nf">sumAllEven</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">number</span> <span class="o">:</span> <span class="n">numbers</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">number</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">total</span> <span class="o">+=</span> <span class="n">number</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">total</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>后来又增加了一个需求，计算数组中所有大于3的元素的和：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// 计算数组中所有大于3的元素之和</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">int</span> <span class="nf">sumMoreThan3</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">number</span> <span class="o">:</span> <span class="n">numbers</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">number</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">total</span> <span class="o">+=</span> <span class="n">number</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">total</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上述需求都很类似，不难发现，三处实现代码中出现了很明显的代码重复现象，三处代码唯一的区别就在if判断的条件不同。如果要处理这种情况，一般方式是通过策略模式重构代码以规避代码重复：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm">* 策略模式</span>
+</span><span class='line'><span class="cm">**/</span>
+</span><span class='line'><span class="kd">interface</span> <span class="nc">Strategy</span> <span class="o">{</span>
+</span><span class='line'>   <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">test</span><span class="o">(</span><span class="kt">int</span> <span class="n">num</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">class</span> <span class="nc">SumAllStrategy</span> <span class="kd">implements</span> <span class="n">Strategy</span> <span class="o">{</span>
+</span><span class='line'>   <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">test</span><span class="o">(</span><span class="kt">int</span> <span class="n">num</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>   <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">class</span> <span class="nc">SumAllEvenStrategy</span> <span class="kd">implements</span> <span class="n">Strategy</span> <span class="o">{</span>
+</span><span class='line'>   <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">test</span><span class="o">(</span><span class="kt">int</span> <span class="n">num</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">num</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>   <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Strategy</span> <span class="n">strategy</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">Solution</span><span class="o">(</span><span class="n">Strategy</span> <span class="n">strategy</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">strategy</span> <span class="o">=</span> <span class="n">strategy</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">sumAll</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">number</span> <span class="o">:</span> <span class="n">numbers</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">strategy</span><span class="o">.</span><span class="na">test</span><span class="o">(</span><span class="n">number</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">total</span> <span class="o">+=</span> <span class="n">number</span><span class="o">;</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">total</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 调用</span>
+</span><span class='line'><span class="n">Solution</span> <span class="n">solution</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Solution</span><span class="o">(</span><span class="n">strategy</span><span class="o">);</span>
+</span><span class='line'><span class="n">solution</span><span class="o">.</span><span class="na">sumAll</span><span class="o">(</span><span class="n">numbers</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>策略模式成功地解决了代码重复的问题，但通过设计模式来解决这样的小问题未免让人觉得小题大做，不是很方便。现在有了Lambda表达式，我们可以这样做：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// Lambda表达式</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">int</span> <span class="nf">sumAll</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">numbers</span><span class="o">,</span> <span class="n">Predicate</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">p</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">number</span> <span class="o">:</span> <span class="n">numbers</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">test</span><span class="o">(</span><span class="n">number</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">total</span> <span class="o">+=</span> <span class="n">number</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">total</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">sumAll</span><span class="o">(</span><span class="n">numbers</span><span class="o">,</span> <span class="n">n</span> <span class="o">-&gt;</span> <span class="kc">true</span><span class="o">);</span>
+</span><span class='line'><span class="n">sumAll</span><span class="o">(</span><span class="n">numbers</span><span class="o">,</span> <span class="n">n</span> <span class="o">-&gt;</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="o">);</span>
+</span><span class='line'><span class="n">sumAll</span><span class="o">(</span><span class="n">numbers</span><span class="o">,</span> <span class="n">n</span> <span class="o">-&gt;</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>策略模式的解决方案就像是传统的Java开发方法，代码冗长复杂；而Lambda的解决方法更像是C++的风格，代码简洁明了，开发起来如沐春风。毫不夸张地说，传递行为的特性给Java的使用带来了更多的可能，从此以后像使用函数语言那样使用Java不再是梦。</p>
+
+<h3>函数式接口</h3>
+
+<p> 因为在Java 8中引入了函数式编程的理念，所以Java 8中增加了函数式接口的概念，函数式接口是指接口中只有一个抽象方法，Java 8有个注解专门表示函数式接口-<code>@FunctionalInterface</code>。函数式接口中的一个抽象方法的限制不针对下文中提到的默认方法和静态方法。</p>
+
+<p>为避免开发人员因为使用Lambda表达式而重复开发函数式接口，Java 8内置了一些通用的函数式接口，包括<code>Predicate</code>、<code>Function</code>、<code>Consumer</code>等。</p>
+
+<p><code>Predicate&lt;T&gt;</code>：将T作为输入，返回一个布尔值作为输出，该接口包含多种默认方法将<code>Predicate</code>组合成其他复杂的逻辑。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Predicate</span> <span class="n">predicate</span> <span class="o">=</span> <span class="o">(</span><span class="n">s</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">predicate</span><span class="o">.</span><span class="na">test</span><span class="o">(</span><span class="s">&quot;foo&quot;</span><span class="o">);</span>              <span class="c1">// true</span>
+</span><span class='line'><span class="n">predicate</span><span class="o">.</span><span class="na">negate</span><span class="o">().</span><span class="na">test</span><span class="o">(</span><span class="s">&quot;foo&quot;</span><span class="o">);</span>     <span class="c1">// false</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Predicate</span> <span class="n">nonNull</span> <span class="o">=</span> <span class="nl">Objects:</span><span class="o">:</span><span class="n">nonNull</span><span class="o">;</span>
+</span><span class='line'><span class="n">Predicate</span> <span class="n">isNull</span> <span class="o">=</span> <span class="nl">Objects:</span><span class="o">:</span><span class="n">isNull</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Predicate</span> <span class="n">isEmpty</span> <span class="o">=</span> <span class="nl">String:</span><span class="o">:</span><span class="n">isEmpty</span><span class="o">;</span>
+</span><span class='line'><span class="n">Predicate</span> <span class="n">isNotEmpty</span> <span class="o">=</span> <span class="n">isEmpty</span><span class="o">.</span><span class="na">negate</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>Function&lt;T, R&gt;</code>：将T作为输入，返回R作为输出，默认方法可被用来将多个函数链接（compose、andThen）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Function</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;</span> <span class="n">toInteger</span> <span class="o">=</span> <span class="nl">Integer:</span><span class="o">:</span><span class="n">valueOf</span><span class="o">;</span>
+</span><span class='line'><span class="n">Function</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">backToString</span> <span class="o">=</span> <span class="n">toInteger</span><span class="o">.</span><span class="na">andThen</span><span class="o">(</span><span class="nl">String:</span><span class="o">:</span><span class="n">valueOf</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">backToString</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="s">&quot;123&quot;</span><span class="o">);</span>     <span class="c1">// &quot;123&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>Consumer&lt;T&gt;</code>：将T作为输入，不返回任何内容，表示在单个参数上的操作</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Consumer</span> <span class="n">greeter</span> <span class="o">=</span> <span class="o">(</span><span class="n">p</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Hello, &quot;</span> <span class="o">+</span> <span class="n">p</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">greeter</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="s">&quot;Skywalker&quot;</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>接口的默认方法和静态方法</h2>
+
+<p> 在Java 8之前，接口中的方法必须都是没有实现的抽象方法；但是在Java 8中，接口的行为有了很显著的变化。首先接口中支持实现的方法-默认方法，默认方法是已经实现的方法，将默认方法加入接口中需要在方法名前加入default关键字，这样实现接口的子类，可以直接使用默认方法，或者根据需求重写默认方法的实现。代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kd">interface</span> <span class="nc">Defaulable</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">// Interfaces now allow default methods, the implementer may or</span>
+</span><span class='line'>    <span class="c1">// may not implement (override) them.</span>
+</span><span class='line'>  <span class="k">default</span> <span class="n">String</span> <span class="nf">notRequired</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="s">&quot;Default implementation&quot;</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">DefaultableImpl</span> <span class="kd">implements</span> <span class="n">Defaulable</span> <span class="o">{</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">OverridableImpl</span> <span class="kd">implements</span> <span class="n">Defaulable</span> <span class="o">{</span>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">notRequired</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="s">&quot;Overridden implementation&quot;</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>接口Defaultable中声明了一个默认方法notRequired()，实现类DefaultableImpl没有重写默认方法，而OverridableImpl实现类重写了默认方法，这两种方式在Java 8中都是语法正确的。</p>
+
+<p>如果能够理解在接口中增加默认方法的话，那么理解接口中增加已实现的static方法应该也是没有问题的。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="kd">interface</span> <span class="nc">DefaulableFactory</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">// Interfaces now allow static methods</span>
+</span><span class='line'>    <span class="kd">static</span> <span class="n">Defaulable</span> <span class="nf">create</span><span class="o">(</span><span class="n">Supplier</span><span class="o">&lt;</span><span class="n">Defaulable</span><span class="o">&gt;</span> <span class="n">supplier</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">supplier</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> 官方宣称JVM平台的接口中默认方法实现是很高效的，并且方法调用的字节码指令支持默认方法，默认方法使已存在的接口可以修改而不会影响编译的过程，Java 8的java.util.Collection中增加的额外方法比如：stream(),forEach(),removeIf()等就是很好的例子。尽管默认方法很强大，但是在使用之前一定要考虑到在实际的工业环境中，由于类之间多重的实现和继承关系的情况下，默认方法会不会导致额外的代价。</p>
+
+<h2>方法引用</h2>
+
+<p>方法引用提供了一种方式直接访问类或者实例已经存在的方法或者构造方法。方法引用结合Lambda表达式可以使语法结构更紧凑简洁。方法引用分为四种方式。</p>
+
+<ul>
+<li><strong>构造方法引用</strong>，语法是<code>Class::new</code>，对于泛型则是<code>Class&lt;T&gt;::new</code>；</li>
+<li><strong>静态方法引用</strong>，语法是<code>Class::static_method</code>；</li>
+<li><strong>类实例方法的引用</strong>，语法是<code>Class::method</code>；</li>
+<li><strong>类的实例引用实例方法</strong>，语法是<code>instance::method</code>。</li>
+</ul>
+
+
+<p>方法引用可以取代简单的Lambda表达式，使得代码结构更清晰，提高代码可读性。感兴趣的同学可以参考<a href="http://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">官方文档</a>。</p>
+
+<h2>Java库的新特性</h2>
+
+<p>除了Lambda表达式之外，Java 8中最让人期待的就是Java库修改及新增的新特性。在这些新增的新特性中，有一些非常好的API，首先是<strong>Optional</strong>，Optional是Java为解决判断null而加入的；然后是<strong>Stream</strong> ，Stream是非常强大的扩展，与Lambda结合一起使用会有更好的效果；最后是<strong>日期时间API</strong>，这个是广大Java开发人员期盼已久的事情。</p>
+
+<h3>Optional</h3>
+
+<p>NullPointerException是程序开发中最常见的bug，而Optional最早是Google Guava项目中引入以解决空指针异常的一种方式，Guava项目不赞成代码被判断null的代码污染，期望程序员写更整洁的代码，而现在Optional正式成为Java 8的一部分。</p>
+
+<p>Optional是一个容器，可以保存一些类型的变量或者null。它提供了很多有用的方法，将空指针判断的非常优雅，代码实例如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Optional</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">fullName</span> <span class="o">=</span> <span class="n">Optional</span><span class="o">.</span><span class="na">ofNullable</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Full Name is set? &quot;</span> <span class="o">+</span> <span class="n">fullName</span><span class="o">.</span><span class="na">isPresent</span><span class="o">());</span>
+</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Full Name: &quot;</span> <span class="o">+</span> <span class="n">fullName</span><span class="o">.</span><span class="na">orElseGet</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="s">&quot;[none]&quot;</span><span class="o">));</span>
+</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">fullName</span><span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">s</span> <span class="o">-&gt;</span> <span class="s">&quot;Hey &quot;</span> <span class="o">+</span> <span class="n">s</span> <span class="o">+</span> <span class="s">&quot;!&quot;</span><span class="o">).</span><span class="na">orElse</span><span class="o">(</span><span class="s">&quot;Hey Stranger!&quot;</span><span class="o">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Optional实例有非空的值，方法<code>isPresent()</code>返回<code>true</code>否则就是<code>false</code>。方法<code>orElseGet()</code>提供了回退机制，当Optional实例的值为空时，返回默认值。方法<code>map()</code>转化当前Optional的值并返回新的Optional实例，<code>orElse()</code>方法类似于<code>orElseGet()</code>，但是它不接受方法，只接受一个默认值。</p>
+
+<h3>Stream</h3>
+
+<p>新增加的Stream API为Java引入了有实际意义的函数式编程，它使得Java程序不再臃肿，大大提高开发效率。Stream只能操作Collection，不支持Map。Stream运算分为中间的（intermediate）、末端的（terminal），中间运算返回Stream自身，末端运算返回具有特定类型的结果。Stream中包括<code>filter</code>、<code>sorted</code>、<code>map</code>、<code>count</code>、<code>reduce</code>等。接口规范如下：</p>
+
+<ul>
+<li><code>filter</code>，接收一个<code>Predicate</code>来过滤流中所有的元素，为中间运算，可以在过滤结果上调用其他stream运算。</li>
+<li><code>sorted</code>，是一个返回流的排序视图的中间运算。如果不传递定制的<code>Comparator</code>，元素将以自然排序方式进行排序。</li>
+<li><code>map</code>，将每个元素通过给定的函数转变为其他对象。</li>
+<li><code>reduce</code>，使用给定的函数对流的元素进行一个减缩运算。结果是一个保存有减缩值的Optional。</li>
+<li><code>parallelStream</code>，返回的也是流对象，不过是并行流，可以更好的利用多核CPU的硬件优势，减少运算时间。</li>
+</ul>
+
+
+<p>为了说明Stream的用法，通过一些代码实例说明：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Streams</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">enum</span> <span class="n">Status</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">OPEN</span><span class="o">,</span> <span class="n">CLOSED</span>
+</span><span class='line'>  <span class="o">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Task</span> <span class="o">{</span>
+</span><span class='line'>      <span class="kd">private</span> <span class="kd">final</span> <span class="n">Status</span> <span class="n">status</span><span class="o">;</span>
+</span><span class='line'>      <span class="kd">private</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">points</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">Task</span><span class="o">(</span><span class="kd">final</span> <span class="n">Status</span> <span class="n">status</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">points</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">this</span><span class="o">.</span><span class="na">status</span> <span class="o">=</span> <span class="n">status</span><span class="o">;</span>
+</span><span class='line'>          <span class="k">this</span><span class="o">.</span><span class="na">points</span> <span class="o">=</span> <span class="n">points</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">getPoints</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="n">points</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="kd">public</span> <span class="n">Status</span> <span class="nf">getStatus</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="n">status</span><span class="o">;</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="nd">@Override</span>
+</span><span class='line'>      <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;[%s, %d]&quot;</span><span class="o">,</span> <span class="n">status</span><span class="o">,</span> <span class="n">points</span><span class="o">);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>初始化Task数据：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">final</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">Task</span><span class="o">&gt;</span> <span class="n">tasks</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span>
+</span><span class='line'>    <span class="k">new</span> <span class="nf">Task</span><span class="o">(</span><span class="n">Status</span><span class="o">.</span><span class="na">OPEN</span><span class="o">,</span> <span class="mi">5</span><span class="o">),</span>
+</span><span class='line'>    <span class="k">new</span> <span class="nf">Task</span><span class="o">(</span><span class="n">Status</span><span class="o">.</span><span class="na">OPEN</span><span class="o">,</span> <span class="mi">13</span><span class="o">),</span>
+</span><span class='line'>    <span class="k">new</span> <span class="nf">Task</span><span class="o">(</span><span class="n">Status</span><span class="o">.</span><span class="na">CLOSED</span><span class="o">,</span> <span class="mi">8</span><span class="o">)</span>
+</span><span class='line'><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后是针对上述代码的提出几个要解决的问题，我会试着使用Stream API解决这些问题，在看到代码的时候，就会知道Stream的强大。</p>
+
+<p>计算所有开放的Task的点数和</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// Calculate total points of all active tasks using sum()</span>
+</span><span class='line'><span class="kd">final</span> <span class="kt">long</span> <span class="n">totalPointsOfOpenTasks</span> <span class="o">=</span> <span class="n">tasks</span>
+</span><span class='line'>    <span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+</span><span class='line'>    <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">task</span> <span class="o">-&gt;</span> <span class="n">task</span><span class="o">.</span><span class="na">getStatus</span><span class="o">()</span> <span class="o">==</span> <span class="n">Status</span><span class="o">.</span><span class="na">OPEN</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">.</span><span class="na">mapToInt</span><span class="o">(</span><span class="nl">Task:</span><span class="o">:</span><span class="n">getPoints</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">.</span><span class="na">sum</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Total points: &quot;</span> <span class="o">+</span> <span class="n">totalPointsOfOpenTasks</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>console的输出：<code>Total points: 18</code></p>
+
+<p>并行处理计算Task的点数和</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// Calculate total points of all tasks</span>
+</span><span class='line'><span class="kd">final</span> <span class="kt">double</span> <span class="n">totalPoints</span> <span class="o">=</span> <span class="n">tasks</span>
+</span><span class='line'>   <span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+</span><span class='line'>   <span class="o">.</span><span class="na">parallel</span><span class="o">()</span>
+</span><span class='line'>   <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">task</span> <span class="o">-&gt;</span> <span class="n">task</span><span class="o">.</span><span class="na">getPoints</span><span class="o">())</span> <span class="c1">// or map(Task::getPoints) </span>
+</span><span class='line'>   <span class="o">.</span><span class="na">reduce</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="nl">Integer:</span><span class="o">:</span><span class="n">sum</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Total points (all tasks): &quot;</span> <span class="o">+</span> <span class="n">totalPoints</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>console的输出：<code>Total points (all tasks): 26.0</code></p>
+
+<p>对Task集合中的元素进行分组</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// Group tasks by their status</span>
+</span><span class='line'><span class="kd">final</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Status</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Task</span><span class="o">&gt;&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="n">tasks</span>
+</span><span class='line'>    <span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+</span><span class='line'>    <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">groupingBy</span><span class="o">(</span><span class="nl">Task:</span><span class="o">:</span><span class="n">getStatus</span><span class="o">));</span>
+</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">map</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>console的输出：<code>{CLOSED=[[CLOSED, 8]], OPEN=[[OPEN, 5], [OPEN, 13]]}</code></p>
+
+<p>计算整个集合中每个Task分数的平均值</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// Calculate the weight of each tasks (as percent of total points)</span>
+</span><span class='line'><span class="kd">final</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">tasks</span>
+</span><span class='line'>    <span class="o">.</span><span class="na">stream</span><span class="o">()</span>                                        <span class="c1">// Stream&lt;String&gt;</span>
+</span><span class='line'>    <span class="o">.</span><span class="na">mapToInt</span><span class="o">(</span><span class="nl">Task:</span><span class="o">:</span><span class="n">getPoints</span><span class="o">)</span>                       <span class="c1">// IntStream</span>
+</span><span class='line'>    <span class="o">.</span><span class="na">asLongStream</span><span class="o">()</span>                                  <span class="c1">// LongStream</span>
+</span><span class='line'>    <span class="o">.</span><span class="na">mapToDouble</span><span class="o">(</span><span class="n">points</span> <span class="o">-&gt;</span> <span class="n">points</span> <span class="o">/</span> <span class="n">totalPoints</span><span class="o">)</span>     <span class="c1">// DoubleStream</span>
+</span><span class='line'>    <span class="o">.</span><span class="na">boxed</span><span class="o">()</span>                                         <span class="c1">// Stream&lt;Double&gt;</span>
+</span><span class='line'>    <span class="o">.</span><span class="na">mapToLong</span><span class="o">(</span><span class="n">weigth</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="kt">long</span><span class="o">)(</span><span class="n">weigth</span> <span class="o">*</span> <span class="mi">100</span><span class="o">))</span>       <span class="c1">// LongStream</span>
+</span><span class='line'>    <span class="o">.</span><span class="na">mapToObj</span><span class="o">(</span><span class="n">percentage</span> <span class="o">-&gt;</span> <span class="n">percentage</span> <span class="o">+</span> <span class="s">&quot;%&quot;</span><span class="o">)</span>        <span class="c1">// Stream&lt;String&gt;</span>
+</span><span class='line'>    <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">());</span>                      <span class="c1">// List&lt;String&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>console的输出：<code>[19%, 50%, 30%]</code></p>
+
+<h3>时间日期API</h3>
+
+<hr />
+
+<p>在Java 8之前，Java的Date库非常不好用，在开发过程中总是会有一些莫名其妙的问题，这次Java 8中引入了<a href="https://github.com/JodaOrg/joda-time">Joda-Time</a>的精华，对原有的接口做了很多调整，也增加了新的一些实用的接口。新增的时间处理类包括：</p>
+
+<ul>
+<li><code>LocalTime</code>，保存ISO-8601日期系统的时间部分，不保存时区信息；</li>
+<li><code>LocalDate</code>，保存ISO-8601日期系统的日期部分，且保存时区信息；</li>
+<li><code>LocalDateTime</code>，保存ISO-8601日期系统的日期和时间，不保存时区信息；</li>
+<li><code>ZonedDateTime</code>，保存ISO-8601日期系统的日期和时间，且保存时区信息；</li>
+<li><code>Duration</code>，可以精确计算两个日期之间的时间差。</li>
+</ul>
+
+
+<p>Java 8这次时间日期API的改动还是很不错的，关于时间API的变动的详细信息请参考<a href="http://docs.oracle.com/javase/tutorial/datetime/index.html">官方文档</a>。</p>
+
+<h2>并行数组</h2>
+
+<p>Java 8新增加了很多方法支持并行的数组处理。最明显的是<code>parallelSort()</code>方法，在多核计算机上，<code>parallelSort()</code>方法可以显著的提高排序的速度。</p>
+
+<p>Java 8给开发人员带来了很多可以提高生产力的特性，不过Java 8刚发布不久，现在还不适合将生产环境迁移到Java 8，但是我们可以在开发过程中尽量少的使用与Java 8不兼容的代码和第三方库。Java 8引入了很多<a href="https://github.com/google/guava">Google Guava</a>的特性，如果想要在开发过程中体验Java 8的新特性，建议在开发中引入<a href="http://mvnrepository.com/artifact/com.google.guava/guava/18.0">Google Guava</a>库。</p>
+
+<h2>参考</h2>
+
+<ul>
+<li><a href="http://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">Java 8方法引用</a></li>
+<li><a href="http://docs.oracle.com/javase/tutorial/datetime/index.html">Java 8时间API</a></li>
+<li><a href="http://ifeve.com/java-8-features-tutorial/">Java 8特性</a></li>
+<li><a href="http://developer.51cto.com/art/201304/387681_all.htm">Java 8为什么需要Lambda表达式</a></li>
+<li><a href="http://blog.csdn.net/wwwsssaaaddd/article/details/37573517">Java8 - 方法引用(method referrance)</a></li>
+<li><a href="https://github.com/google/guava">Google Guava</a></li>
+<li><a href="https://github.com/JodaOrg/joda-time">Joda-Time</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[正则表达式语法小结]]></title>
+    <link href="http://xeostream.github.io/blog/2015/05/08/regular-expression/"/>
+    <updated>2015-05-08T22:43:11-05:00</updated>
+    <id>http://xeostream.github.io/blog/2015/05/08/regular-expression</id>
+    <content type="html"><![CDATA[<p>正则表达式（Regular Expression）使用单个字符串来描述、匹配一系列符合某个句法规则的字符串。正则表达式通常被用来检索、替换符合模式的文本。正则表达式最早出现在出现在理论计算机科学的自动控制理论中，后来被Unix系统上的编辑器ed使用，并最终发展为grep命令。最后，正则表达式被广泛使用在大多数编程语言中。</p>
+
+<!--more-->
+
+
+<h2>基本语法</h2>
+
+<p>一个正则表达式通常被称为一个模式，被用来描述、匹配一系列符合某个句法规则的字符串。正则表达式语法包括：</p>
+
+<ul>
+<li><strong>字面值</strong>，没有任何转义，查找的对象就是其本身。比如正则表达式abc，匹配的结果就是a、b、c三个字母连在一起的字符串。</li>
+<li><strong><code>.</code></strong>，匹配除换行符外的任意字符。</li>
+<li><code>[]</code>，中括号这种形式被称为字符类。在正则表达式中，一些字符被<code>[]</code>符号括住，它们表示被括号中属性约束的字符。需要注意两点：
+
+<ol>
+<li>在字符类中字符的顺序和重复性是没有意义的；</li>
+<li><code>.</code>在字符类中表示的就是其本身。</li>
+</ol>
+</li>
+<li><strong><code>-</code></strong>，为区间符号，表示在给定的范围内取值。<code>[0123456789]</code>与<code>[0-9]</code>是相同的，区间的范围应该是有意义的，<code>[a-1]</code>虽然没有语法错误，但是没有任何意义。区间左右两端对应的是字符，并不是数字，<code>[2-41]</code>?</li>
+<li><strong><code>^</code></strong>，为取反符号，取反符号必须在<code>[]</code>中使用，取反符号是将后面的整体作为取反条件的。</li>
+<li><strong><code>{}</code></strong>，为乘法集，以前面的整体作为乘法条件。乘法集区间有如下特点：
+
+<ol>
+<li>乘法集的“越长越好”属性，对于字符串<code>aaaabb</code>，正则表达式<code>a{2,4}</code>会匹配<code>aaaa</code>；</li>
+<li>乘法集的“全部获取”属性，对于字符串<code>aabbaaaab</code>，正则表达式<code>a{2,4}</code>会匹配<code>aa</code>和<code>aaaa</code>；</li>
+<li>乘法集区间支持开区间，<code>a{1,}</code>是合法的。</li>
+</ol>
+</li>
+<li><strong><code>?</code></strong>，为判断符号，同<code>{0,1}</code>。当该字符紧跟在任何一个其他限制符（<code>*</code>,<code>+</code>,<code>?</code>，<code>{n}</code>，<code>{n,}</code>，<code>{n,m}</code>）后面时，匹配模式是非贪婪的。非贪婪模式尽可能少的匹配所搜索的字符串，而默认的贪婪模式则尽可能多的匹配所搜索的字符串。例如，对于字符串<code>oooo</code>，<code>o+?</code>将匹配单个<code>o</code>，而<code>o+</code>将匹配所有<code>o</code>。</li>
+<li><strong><code>*</code></strong>，为通配符号，同<code>{0,}</code>。</li>
+<li><strong><code>+</code></strong>，同<code>{1,}</code>。</li>
+<li><strong><code>|</code></strong>，为或符号，表示或的关系,<code>abc|edf</code>表示匹配<code>abc</code>或者<code>edf</code>。</li>
+<li><strong><code>()</code></strong>，表示组合，也可以理解为高优先级匹配。</li>
+<li><strong><code>\b</code></strong>，表示单词的边界，也就是指单词和空格间的位置。例如，<code>er\b</code>可以匹配<code>never</code>中的<code>er</code>，但不能匹配<code>verb</code>中的<code>er</code>。</li>
+<li><strong><code>\B</code></strong>，匹配非单词边界。<code>er\B</code>能匹配<code>verb</code>中的<code>er</code>，但不能匹配<code>never</code>中的<code>er</code>。</li>
+<li><strong><code>cx</code></strong>，匹配由x指明的控制字符。例如，<code>\cM</code>匹配一个Control-M或回车符。x的值必须为A-Z或a-z之一。否则，将c视为一个原义的c字符。</li>
+<li><strong><code>\d</code></strong>，匹配一个数字字符。等价于<code>[0-9]</code>。</li>
+<li><strong><code>\D</code></strong>，匹配一个非数字字符。等价于<code>[^0-9]</code>。</li>
+<li><strong><code>\f</code></strong>，匹配一个换页符。等价于<code>\x0c</code>和<code>\cL</code>。</li>
+<li><strong><code>\n</code></strong>，匹配一个换行符。等价于<code>\x0a</code>和<code>\cJ</code>。</li>
+<li><strong><code>\r</code></strong>，匹配一个回车符。等价于<code>\x0d</code>和<code>\cM</code>。</li>
+<li><strong><code>\s</code></strong>，匹配任何空白字符，包括空格、制表符、换页符等等。等价于<code>[ \f\n\r\t\v]</code>。</li>
+<li><strong><code>\S</code></strong>，匹配任何非空白字符。等价于<code>[^ \f\n\r\t\v]</code>。</li>
+<li><strong><code>\t</code></strong>，匹配一个制表符。等价于<code>\x09</code>和<code>\cI</code>。</li>
+<li><strong><code>\v</code></strong>，匹配一个垂直制表符。等价于<code>\x0b</code>和<code>\cK</code>。</li>
+<li><strong><code>\w</code></strong>，匹配包括下划线的任何单词字符。等价于<code>[A-Za-z0-9_]</code>。</li>
+<li><strong><code>\W</code></strong>，匹配任何非单词字符。等价于<code>[^A-Za-z0-9_]</code>。</li>
+<li><strong><code>\xn</code></strong>，匹配n，其中n为十六进制转义值。十六进制转义值必须为确定的两个数字长。例如，<code>\x41</code>匹配<code>A</code>。正则表达式中可以使用ASCII编码。</li>
+<li><strong><code>^$</code></strong>，<strong><code>^</code></strong>表示行的开头，<code>$</code>表示行的结尾。</li>
+<li><strong><code>\</code></strong>，转义字符。</li>
+</ul>
+
+
+<h2>高（奇）级（技）语（淫）法（巧）</h2>
+
+<p>下面介绍的是一些正则表达式中比较生僻，但是也非常有用的用法。</p>
+
+<ul>
+<li><strong><code>(pattern)</code></strong>，匹配pattern并获取这一匹配的子字符串。该子字符串用于向后引用。所获取的匹配可以从产生的Matches集合得到。</li>
+<li><strong><code>(?:pattern)</code></strong>，匹配pattern但不获取匹配的子字符串，也就是说这是一个非获取匹配，不存储匹配的子字符串用于向后引用。这在使用或字符<code>(|)</code>来组合一个模式的各个部分是很有用。例如<code>industr(?:y|ies)</code>就是一个比<code>industry|industries</code>更简略的表达式。</li>
+<li><strong><code>(?=pattern)</code></strong>，<strong>正向肯定预查</strong>，在任何匹配pattern的字符串开始处匹配查找字符串。这是一个非获取匹配，也就是说，该匹配不需要获取供以后使用。例如，<code>Windows(?=95|98|NT|2000)</code>能匹配<code>Windows2000</code>中的<code>Windows</code>，但不能匹配<code>Windows3.1</code>中的<code>Windows</code>。预查不消耗字符，也就是说，在一个匹配发生后，在最后一次匹配之后立即开始下一次匹配的搜索，而不是从包含预查的字符之后开始。</li>
+<li><strong><code>(?!pattern)</code></strong>，<strong>正向否定预查</strong>，在任何不匹配pattern的字符串开始处匹配查找字符串。这是一个非获取匹配，也就是说，该匹配不需要获取供以后使用。例如<code>Windows(?!95|98|NT|2000)</code>能匹配<code>Windows3.1</code>中的<code>Windows</code>，但不能匹配<code>Windows2000</code>中的<code>Windows</code>。预查不消耗字符，也就是说，在一个匹配发生后，在最后一次匹配之后立即开始下一次匹配的搜索，而不是从包含预查的字符之后开始</li>
+<li><strong><code>(?&lt;=pattern)</code></strong>，<strong>反向肯定预查</strong>，与正向肯定预查类似，只是方向相反。例如，<code>(?&lt;=95|98|NT|2000)Windows</code>能匹配<code>2000Windows</code>中的<code>Windows</code>，但不能匹配<code>3.1Windows</code>中的<code>Windows</code>。</li>
+<li><strong><code>(?&lt;!pattern)</code></strong>，<strong>反向否定预查</strong>，与正向否定预查类似，只是方向相反。例如<code>(?&lt;!95|98|NT|2000)Windows</code>能匹配<code>3.1Windows</code>中的<code>Windows</code>，但不能匹配<code>2000Windows</code>中的<code>Windows</code>。</li>
+</ul>
+
+
+<h2>贪婪匹配和懒惰匹配</h2>
+
+<p>当正则表达式中包含能接受重复的限定符时，在使整个表达式能得到匹配的前提下，通常的行为是匹配尽可能多的字符。以<code>a.*b</code>为例，它会匹配最长的以<code>a</code>开始，以<code>b</code>结束的字符串。如果用它来搜索<code>aabab</code>的话，会匹配整个字符串，这被称为<strong>贪婪匹配</strong>。</p>
+
+<p>但是有时我们需要匹配尽可能少的字符-<strong>懒惰匹配</strong>。贪婪匹配可以转化为懒惰匹配，只需要在表达式中增加一个问号<code>？</code>。这样<code>.*?</code>就意味着匹配任意数量的重复，但是在能使匹配成功的前提下使用最少的重复。<code>a.*?b</code>匹配最短的，以<code>a</code>开始，以<code>b</code>结束的字符串。如果把它用于匹配<code>aabab</code>的话，会匹配<code>aab</code>和<code>ab</code>。</p>
+
+<h2>参考资料</h2>
+
+<ul>
+<li><a href="http://zh.wikipedia.org/zh/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F">正则表达式-维基百科</a></li>
+<li><a href="http://deerchao.net/tutorials/regex/regex.htm">正则表达式30分钟入门教程</a></li>
+<li><a href="http://msdn.microsoft.com/zh-cn/library/ae5bf541(v=vs.100).aspx">MSDN正则表达式语法介绍</a></li>
+</ul>
+
+
+<p>声明：欢迎转载，请注明出处。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[字符串匹配算法－KMP理解]]></title>
+    <link href="http://xeostream.github.io/blog/2013/11/10/kmp/"/>
+    <updated>2013-11-10T10:03:00-06:00</updated>
+    <id>http://xeostream.github.io/blog/2013/11/10/kmp</id>
+    <content type="html"><![CDATA[<p>字符串匹配作为计算机的基本任务，有很多种算法可以高效的匹配字符串，其中<a href="http://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm">Knuth-Morris-Pratt算法</a>（简称KMP）是最常用的算法之一。可是很多人都觉得KMP难以理解，所以我就想试着理出一些头绪，如果能给你一些帮助，那就更好了。</p>
+
+<!--more-->
+
+
+<p>字符串匹配包括模式串和目标串两部分数据，普通的匹配算法需要回溯即不匹配就后退一位，而KMP通过对模式串的分析，避免一些注定失败的匹配过程，使得时间复杂度从(M*N)降低到(M+N)。</p>
+
+<p>KMP算法的高效性就在于next数组记录了当前字符不匹配的情况下模式串如何跳转，根据next数组记录的第一个元素的不同可以将KMP算法通过两种方式分析，第一种是传统的方式,next[0] = -1;第二种是最近看到的理解，next[0] = 0。接下来具体分析两种观点。</p>
+
+<h2>传(晦)统(涩)的KMP算法解析</h2>
+
+<p>传统的KMP算法中next数组的含义是当前位置的模式串字符与目标串字符不同时，模式串将要跳转的位置。举个例子，目标串S = ”abcabcabdabba”，模式串T = “abcabd”，然后构造next数组，算法如下:</p>
+
+<ol>
+<li>next[0] = -1，意义：任何模式串next的第一位都是-1。</li>
+<li>next[j] = k，意义：<em>T[0]~T[k-1] = T[j-k]~T[j-1]且T[k] != T[j]</em> <strong>(1 &lt;= k &lt; j)</strong>。</li>
+<li>next[j] = -1，意义：<em>T[0]~T[k-1] = T[j-k]~T[j-1]且T[k] = T[j]</em> <strong>(1 &lt;= k &lt; j)</strong>。</li>
+<li>next[j] = 0，意义：除上述情况的其他情况。</li>
+</ol>
+
+
+<p>根据上述算法，可以得到T的next数组next[0] = -1，next[1] = 0是毫无疑问的；next[2] = 0，因为“ab”没有相同的子串；next[3] = 0，因为“abc”没有相同的子串；next[4] = -1，因为T[0] = T[3]且T[1] = T[4]；next[5] = 2,因为T[0]T[1] = T[3]T[4]。</p>
+
+<p>在得到next数组之后如何跳转呢，这就是接下来要解决的问题。假设S和T匹配发现在S[m] != T[n]，对应到next[n]的三种情况，如下：</p>
+
+<ul>
+<li>next[n] = -1，即<em>T[0] = T[n]</em>，由于T[n] != S[m]，所以比较<strong>S[m+1] == T[0]</strong>。</li>
+<li>next[n] = 0，即<em>T[0] != T[n]</em>，比较<strong>S[m] == T[0]</strong>。</li>
+<li>next[n] = k (1 &lt;= k &lt; n)，即<em>T[0]~T[k-1] = T[n-k]~T[n-1] = S[m-k]~S[m-1]</em>，比较<strong>S[m] == T[k]</strong>。</li>
+</ul>
+
+
+<p>可以看出，传(晦)统(涩)的的KMP思路不复杂但是不太清晰，再加上很多教材上对next数组解释不清和一些莫名其妙的递归过程求next数组，使得我们很容易迷惑。</p>
+
+<h2>新(聪)颖(明)的KMP算法解析</h2>
+
+<p>相对于传统的事无巨细的KMP解析过程，这次的解析是从整体的角度来解析KMP算法，有一种高屋建瓴的快感。</p>
+
+<p>仍然通过对目标串S，模式串T的匹配过程来分析。首先改变next数组的定义，<em>next[n] = k，即T[0]~T[k] = T[n-k]~T[n]</em>，跳转算法也要做相应的调整：<em>向后移动的位数 = 当前匹配的字符数 - next[n] = (n - k)</em>。</p>
+
+<p>最重要的过程仍然是构造next数组，不同于传统的构造next数组方法的复杂，这次我们采用一种看起来比较简单的方法-<em>通过字符串中前缀与后缀中共有的最长的字符串的长度作为next数组的元素值</em>。</p>
+
+<p>首先解释下前缀和后缀的概念：</p>
+
+<blockquote><p><strong>字符串：bread</strong></p>
+
+<p><strong>前缀：b，br，bre，brea</strong></p>
+
+<p><strong>后缀：d，ad，ead，read</strong></p></blockquote>
+
+<p>如果模式串T = “ABCDABD”，构造next数组：</p>
+
+<ul>
+<li>“A”前缀和后缀都为空集，共有的为空，则next[0] = 0</li>
+<li>“AB”前缀为[A]，后缀为[B]，共有的为空，则next[1] = 0</li>
+<li>“ABC”前缀为[A，AB]，后缀为[C，BC]，共有的为空，则next[2] = 0</li>
+<li>“ABCD”前缀为[A，AB，ABC]，后缀为[D，CD，BCD]，共有的为空，则next[3] = 0</li>
+<li>“ABCDA”前缀为[A，AB，ABC，ABCD]，后缀为[A，DA，CDA，BCDA]，共有的为[A]，则next[4] = 1</li>
+<li>“ABCDAB”前缀为[A，AB，ABC，ABCD，ABCDA]，后缀为[B，AB，DAB，CDAB，BCDAB]，共有的为[AB]，next[5] = 2</li>
+<li>“ABCDABD”前缀为[A，AB，ABC，ABCD，ABCDA，ABCDAB]，后缀为[D，BD，ABD，DABD，CDABD，BCDABD]，共有的为空，则next[6] = 0</li>
+</ul>
+
+
+<p>代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm"> * Created-On: 2013-10-11</span>
+</span><span class='line'><span class="cm"> * Author: Arthur_Wang</span>
+</span><span class='line'><span class="cm"> * KMP point: construct jump array, store short string jump information</span>
+</span><span class='line'><span class="cm"> * long, short = &quot;BBC ABCDAB ABCDABCDABDE&quot;, &quot;ABCDABD&quot;</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KMP</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">String</span> <span class="n">longString</span><span class="o">,</span> <span class="n">shortString</span><span class="o">;</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">jumps</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="nf">KMP</span><span class="o">(</span><span class="n">String</span> <span class="n">longString</span><span class="o">,</span> <span class="n">String</span> <span class="n">shortString</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">longString</span> <span class="o">=</span> <span class="n">longString</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">shortString</span> <span class="o">=</span> <span class="n">shortString</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">jumps</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">shortString</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">+</span> <span class="mi">1</span><span class="o">];</span>
+</span><span class='line'>      <span class="n">jumps</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="n">jumps</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">find</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">shortString</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+</span><span class='line'>          <span class="n">jumps</span><span class="o">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="o">]</span> <span class="o">=</span> <span class="n">next</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">:</span> <span class="n">jumps</span><span class="o">)</span>
+</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="s">&quot; &quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">,</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Start&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">longString</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">shortString</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">longString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">==</span> <span class="n">shortString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">j</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>              <span class="n">j</span><span class="o">++;</span>
+</span><span class='line'>              <span class="n">i</span><span class="o">++;</span>
+</span><span class='line'>          <span class="o">}</span> <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
+</span><span class='line'>              <span class="n">i</span><span class="o">++;</span>
+</span><span class='line'>          <span class="k">else</span>
+</span><span class='line'>              <span class="n">j</span> <span class="o">=</span> <span class="n">jumps</span><span class="o">[</span><span class="n">j</span><span class="o">];</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">==</span> <span class="n">shortString</span><span class="o">.</span><span class="na">length</span><span class="o">())</span>
+</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;failed&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">int</span> <span class="nf">next</span><span class="o">(</span><span class="kt">int</span> <span class="n">index</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">jumps</span><span class="o">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">shortString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">==</span> <span class="n">shortString</span>
+</span><span class='line'>                  <span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">jumps</span><span class="o">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]))</span>
+</span><span class='line'>              <span class="k">return</span> <span class="n">jumps</span><span class="o">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>          <span class="k">else</span>
+</span><span class='line'>              <span class="nf">next</span><span class="o">(</span><span class="n">jumps</span><span class="o">[</span><span class="n">jumps</span><span class="o">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">]]);</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">shortString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">==</span> <span class="n">shortString</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">))</span>
+</span><span class='line'>          <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
+</span><span class='line'>      <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">KMP</span> <span class="n">kmp</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">KMP</span><span class="o">(</span><span class="s">&quot;BBC ABCDAB ABCDABCDABDE&quot;</span><span class="o">,</span> <span class="s">&quot;ABCDABD&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">kmp</span><span class="o">.</span><span class="na">find</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>结论</h2>
+
+<p>有的读者可能已经看出来上文两种方法其实没有本质的不同，最大的区别在于两者构造next数组的过程，第二种方式从整体上考虑模式串的特征，直观看起来更容易理解，如果有不同看法，欢迎交流！</p>
+
+<p>参考资料</p>
+
+<ul>
+<li><a href="http://blog.csdn.net/merlin_q/article/details/6707990">KMP</a></li>
+<li><a href="http://blog.jobbole.com/39066/">字符串匹配的KMP算法</a></li>
+</ul>
+
+
+<p>声明：欢迎转载，请注明出处。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Mint15安装moses教程]]></title>
+    <link href="http://xeostream.github.io/blog/2013/07/15/moses-one/"/>
+    <updated>2013-07-15T21:10:00-05:00</updated>
+    <id>http://xeostream.github.io/blog/2013/07/15/moses-one</id>
+    <content type="html"><![CDATA[<p>我的系统是Linux Mint15，64位的系统，gcc的版本是4.7.3，之后我将以此系统为例演示编译配置moses的步骤。</p>
+
+<!--more-->
+
+
+<h1>安装准备工作</h1>
+
+<h2>安装boost及其他依赖包</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo apt-get installlibboost-all-dev build-essential libz-dev libbz2-dev
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>boost的安装包还是很大的，我尝试从boost官网下载最新版本源码在本地编译，可是在后来编译moses时会报缺失boost包的错，所以推荐使用命令安装。</p>
+
+<h2>从github上下载moses源码</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>git clone git://github.com/moses-smt/mosesdecoder.git
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>熟悉git的人应该都知道，上面的命令是将github上moses的源码下载到本地(需要安装git,具体请搜索)，git是很好的代码同步工具，推荐尝试。之前看到有些关于moses的教程，可能由于时间比较久的关系，很多的内容已经不适合，所以建议大家如果不明白的地方，多看看<a href="http://www.statmt.org/moses/">官方网站</a>提供的教程，都是比较新的资料。</p>
+
+<h2>编译moses源码</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">cd</span> .../mosesdecoder/     <span class="c">#之前下载的moses源码目录</span>
+</span><span class='line'>./bjam -j4      <span class="c">#ｊ之后的数字代表的是cpu运算核心的个数，我是i5的，所以是４</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>编译大概需要十分钟到半小时的样子，具体时间依据电脑配置不同而变化;bjam后可以跟很多可扩展的选项，不过官网的教程说如果boost安装好的话，应该就不需要加上其他的选项了。在后面的配置过程中，也没有出现相关的问题。</p>
+
+<h2>验证安装是否正确</h2>
+
+<p>首先下载测试数据</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">cd</span> .../mosesdecoder
+</span><span class='line'>wget http://www.statmt.org/moses/download/sample-models.tgz
+</span><span class='line'>tar xzf sample-models.tgz
+</span><span class='line'><span class="nb">cd </span>sample-models
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>moses自带了语言建模工具包KenLM，数据默认是配置好的，不要改动。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">cd</span> .../mosesdecoder/sample-models
+</span><span class='line'>~/mosesdecoder/bin/moses -f phrase-model/moses.ini &lt; phrase-model/in &gt; out
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果安装正确的话，在out文件中应该是两行it is a small house。</p>
+
+<h1>结语</h1>
+
+<p>本篇介绍moses的编译工作，在接下来的博文里会继续介绍moses相关的其他工具的安装及EMS翻译系统的搭建工作。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Coreseek配置rails项目全文搜索]]></title>
+    <link href="http://xeostream.github.io/blog/2013/03/26/rails-coreseek/"/>
+    <updated>2013-03-26T22:07:00-06:00</updated>
+    <id>http://xeostream.github.io/blog/2013/03/26/rails-coreseek</id>
+    <content type="html"><![CDATA[<p>rails是ruby的web框架，由于rails框架的易用性，近几年出现了很多基于rails的网站，随着网站的发展，积累的数据会越来越多，有的时候我们可能要给网站升级，比如增加全文搜索功能，那就要用到我们说到的coreseek软件，coreseek是一款中文全文检索软件，coreseek本身是基于sphinx开发的，接下来介绍coreseek的安装与配置(需要安装包的可以给我留言)。</p>
+
+<!--more-->
+
+
+<h2>安装coreseek</h2>
+
+<p>1.首先在安装coreseek之前，配置环境，安装编译需要的一些软件，运行命令:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo su
+</span><span class='line'>apt-get install make gcc g++ automake libtool mysql-client libmysqlclient15-dev libxml2-dev libexpat1-dev
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>2.bash中进入解压好的文件夹下，可以看到csft%文件夹和mmseg%文件夹等，首先要安装mmseg，如果成功之后，继续安装csft。<br>
+3.进入mmseg文件夹中，开始安装mmseg，执行命令：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>./bootstrap
+</span><span class='line'>./configure --prefix<span class="o">=</span>path <span class="c">#path为mmseg的安装目录，例/usr/local/bin/mmseg3等</span>
+</span><span class='line'>make
+</span><span class='line'>make install
+</span><span class='line'><span class="nb">cd</span> ..
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>4.进入csft文件夹下，执行命令：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sh buildconf.sh
+</span><span class='line'>./configure --prefix<span class="o">=</span>/usr/local/bin/coreseek --without-unixodbc --with-mmseg --with-mmseg-includes<span class="o">=</span>/usr/local/bin/mmseg3/include/mmseg/ --with-mmseg-libs<span class="o">=</span>/usr/local/bin/mmseg3/lib/ --with-mysql <span class="c">#</span>
+</span><span class='line'>第一个prefix参数值将做为coreseek的安装目录，之后的参数完全参照mmseg的安装目录进行设置
+</span><span class='line'>make
+</span><span class='line'>make install
+</span><span class='line'><span class="nb">cd</span> ..
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>5.测试coreseek是否安装成功，执行如下命令：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">cd </span>testpack
+</span><span class='line'>cat var/test/test.xml
+</span><span class='line'>/usr/local/bin/mmseg3/bin/mmseg -d /usr/local/bin/mmseg3/etc var/test/test.xml
+</span><span class='line'>/usr/local/bin/coreseek/bin/indexer -c etc/csft.conf --all <span class="c">#这里报错段错误，解决:打开csft.conf修改charset_dictpath为uni.lib目录</span>
+</span><span class='line'>/usr/local/bin/coreseek/bin/search -c etc/csft.conf 网络 <span class="c">#如果coreseek安装成功，这时应该会返回一定的根据关键字’网络‘搜索到的结果。</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>coreseek配置</h2>
+
+<p>coreseek安装成功之后，就是在rails项目中配置coreseek，我们也可以总结为几个步骤。<br>
+1.进入rails项目文件夹下config文件夹下新建sphinx.yml,配置文件很重要，需要与安装目录项目对应，配置代码大致如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>development:
+</span><span class='line'>charset_type: zh_cn.utf-8
+</span><span class='line'>charset_dictpath: /usr/local/coreseek/var/data/
+</span><span class='line'>bin_path: /usr/local/bin
+</span><span class='line'>searchd_binary_name: searchd
+</span><span class='line'>indexer_binary_name: indexer
+</span><span class='line'>...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>2.在bash中，cd到当前rails项目目录下，运行命令：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>rake ts:index <span class="c">#为配置的model建立索引</span>
+</span><span class='line'>如果有报段错误之类的，这说明之前生成的中文字典出现问题，需要重新生成中文字典，在bash中重新进入到mmseg/data文件夹下
+</span><span class='line'>
+</span><span class='line'>python build_unigram.py char.stat.txt Lexicon_full_words.txt &gt; unigram.txt
+</span><span class='line'>mmseg -u unigram.txt <span class="c">#此命令会生成unigram.txt.uni</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将生成的unigram.txt.uni重命名为uni.lib,将其复制到coreseek的安装目录/var/data/<br>
+再次运行命令:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>rake ts:index
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>配置的model的索引应该就成功建立。<br>
+3.开启coreseek服务，可以在rails项目的console下运行search方法进行全文检索。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>rake ts:start
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>   <br/>
+这些天一直在看coreseek配置，由于coreseek的官网无法访问，所以其中曲折只有亲身体会才会知道，本人才疏学浅，如有异议，还请不吝赐教。  <br/>
+<a href="http://xeostream.github.com/blog/2013/03/26/rails-coreseek">版权所有</a>，欢迎转载注明出处与作者。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[RubyOnRails学习之rails框架]]></title>
+    <link href="http://xeostream.github.io/blog/2013/03/16/rubyonrails-one/"/>
+    <updated>2013-03-16T17:58:00-06:00</updated>
+    <id>http://xeostream.github.io/blog/2013/03/16/rubyonrails-one</id>
+    <content type="html"><![CDATA[<p>rails是基于MVC的web框架，model对应于active record，controller对应于action controller，view对应于action view。</p>
+
+<!--more-->
+
+
+<h2>Active record与model</h2>
+
+<p>modle对应的active record 继承于ActiveRecord::Base，类似于Hibernate，原理是利用文件名自动查找对应的业务对象与数据库中的表，由于数据的持久化，在每个表对应的唯一一个active record中声明表中每列的属性，这个过程需要一一对应。建立active record对象有两种方法；一，通过new()方法建立，这种方法声明的active record对象不会提交给数据库，所以无法在数据库中得到体现；二，通过create()方法声明的对象可以做到active record与数据库的同步。声明对象时需要给对象的属性赋值，赋值方法主要为在声明对象的同时传入hash或者是代码块。rails的ORM不需要像Java中SSH的大量配置文件，这要归功于“约定大于配置”理念。rails的数据库的配置需要到项目下config/database.yml中配置，数据库的表名是active record的类名的复数形式，例:catalogs-Catalog，这些可以在ActiveRecord：Base基类提供的方法中设置。</p>
+
+<h2>Action controller与controller</h2>
+
+<p>controller对应的action controller继承于ActionController::Base，每个controller都有一个或者多个action(方法)，action构成所有的业务逻辑，action负责模版绘制，重定向，文本编辑等等。首先视图中的模块通过dispatcher连接到对应的controller，controller的处理过程是获得:action的键值，调用指定的action。每个action对应的模版在app/views/controllername目录下，名字相互对应，如果没有缺省的action和模版，就调用名为index的action，action每次只能完成一次绘制或者重定向。</p>
+
+<h2>Action view与view</h2>
+
+<p>view对应于action view继承于ActionView::Base，而ActionView::Base定义了三种模版。</p>
+
+<blockquote><p>.rhtml文件，ruby代码嵌入html代码中，&lt;% %>是嵌入的ruby处理代码，&lt;=>是要显示的数据。<br>
+.rxml文件，生成xml文件。<br>
+.rjs文件，通过JavaScriptGenerator的对象page的方法对相应的html文件惊醒修改，这和rails的Ajax有关，之后我们在详细讨论。<br><br>
+<a href="http://xeostream.github.com/blog/2013/03/16/rubyonrails-one">版权所有</a>，欢迎转载注明出处与作者。</p></blockquote>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Test Driven Development/TDD]]></title>
+    <link href="http://xeostream.github.io/blog/2013/03/10/TDD/"/>
+    <updated>2013-03-10T15:54:00-06:00</updated>
+    <id>http://xeostream.github.io/blog/2013/03/10/TDD</id>
+    <content type="html"><![CDATA[<p>作为一个有理想、有追求的程序员，你成天被各种名词包围着，你对其中一个叫做敏捷的东西特别感兴趣，因为它特别强调人的作用，这听着都让做程序员的你感到舒服。为了让自己早日敏捷起来，你从众多的敏捷实践中选择了一个叫做测试驱动开发（Test Driven Development，TDD）的作为你的起始点。因为它对你周遭的环境要求是最低的：它不像结对那样，要求其他人和你一起合作；也不像采用Story那样改变你所在团队的做事方式……你所需要做的，只是在你编写业务代码之前，把测试先写好。这完全是一种润物细无声的做法，根本无需告诉你之外的任何人。就在别人忙碌的找bug时，你便开始享受敏捷带给你的快乐了。顺便带来的好处是，下次在那里和别人争论敏捷的时候，你可以以一个实践者的姿态出现，而不是在那里信口开河。</p>
+
+<!--more-->
+
+
+<p>你不会打无准备之仗，于是，你通读了Kent Beck的那本薄册子。通读之下，你对TDD更是充满了信心。因为“红——绿——重构”的步骤实在是简单得令人发指。好吧！总而言之，你已经信心十足的准备开始TDD，步入敏捷的康庄大道了。</p>
+
+<p>理想很美好，现实很残酷。</p>
+
+<p>当你着手在实际项目中体验TDD的时候，一切变得并不像最初看起来的那样美好。虽然你努力的坚持着TDD的原则，但你经常就会发现某些东西不好测，比如你遇到了数据库，比如你遇到了GUI，比如你遇到了计时器（Timer）。敏捷并非教条，当某些事不可为的时候，你完全可以不那么坚持。于是，你告诉自己，不好测的东西可以不测，这样，至少从心理上来说，你觉得舒服多了。随着工作的继续，你发现，你不能测的东西越来越多，单元测试的覆盖率随着开发的进行正在逐渐降低，一丝恐惧涌上心头。回过头来，再去看Kent Beck的书，你突然觉得，你似乎被骗了，因为Kent Beck的例子貌似全都是逻辑，如果只是逻辑，当然好测了，但现实从来就不是这样。</p>
+
+<p>难道TDD只是看上去很美？</p>
+
+<p>显然，你不愿意就这样放弃，放弃你苦心学来的软件开发秘籍，那些传说中的高手极力推崇的TDD必然有一定道理，TDD确实能够让你感觉很好：能测试的那部分代码确实极大的增强了你对软件质量的信心，而且出错了也确实好找，每次修改代码之后运行测试出现的绿条也确实让你身心愉悦。</p>
+
+<p>那问题到底出在哪呢？你陷入了沉思。</p>
+
+<p>信马由缰，你翻开了自己写过的代码。看着自己写的这些代码，你忽然意识到一个问题，自己遇到的问题并不属于TDD，而是属于单元测试。正如你之前所想到的那样，TDD做法本身的结果是让你感到快乐的。对，一定是单元测试本身出了问题。那单元测试出了什么问题，很显然，一大堆不能测试的部分让单元测试变得很难写，降低了单元测试的覆盖度。那是不是这会是一个无解的问题呢？你显然不愿意就此放弃，所以，顺着这个思路继续向前。</p>
+
+<p>TDD之所以让你安心，主要是每次编写代码之后，运行测试会出现一个绿条，告诉你测试通过。这样，你可以放心大胆的向前继续，因为你的代码并没有破坏任何东西。究竟是什么让你感到不安，显然是那些测试没有覆盖到的代码。你又仔细翻看了一下那些没有测试覆盖的代码，你的思路一下子清晰起来。之所以这部分让你不安，因为里面除了那些确实不好测试的部分之外，里面还有一些逻辑。如果只是那些真正不好测试的部分没有被测试覆盖到，你会觉得心里还有一些安慰。你确定了，真正使你不安的就是与不好测试的代码共存亡的这些逻辑部分。</p>
+
+<p>如果测试可以覆盖到这些逻辑的部分，至少从感情上来说，就可以接受了。那怎么才能让这些部分被测试覆盖到呢？你仔细观察着那些没有测试的代码，如果这样做，这个部分就可以测试了，如果那样做，那个部分也可以测试了，一来二去，这些貌似不可测试的代码可以分解出许多可以测试的部分。</p>
+
+<p>你的心情一下子好了许多，因为这么做终于可以让测试的覆盖度达到让你心理上可以接受的范围。不过，新的问题也随之而来。我在做什么？拆来分去，这不就是设计吗？怎么走到这里来了。我不是在分析单元测试的问题吗？对了，我最初的问题是TDD，怎么一路跑到设计上来了？</p>
+
+<p>TDD？设计？</p>
+
+<p>你突然发觉自己对TDD的理解有一些偏差。TDD，并不代表不需要设计。读过很多书的你突然想起了Robert Martin那本著名的《敏捷软件开发》，上面有一个关于数据库访问的例子。那个例子里面，前后两个版本的差异正好就是考虑设计的结果。通常，在设计中考虑测试，会很容易找到设计中僵硬的部分，让程序更加灵活。再进一步，如果在开始动手之前，稍微进行一些设计，这些问题还是可能注意得到的。你突然觉得，正是因为TDD本身过于强调测试的价值所在，让你忽略软件开发中很重要的部分：设计。</p>
+
+<p>思路一下子清楚起来，TDD其实不只是“红——绿——重构”，它还是与设计相关的：在动手之前，还是要有一定的设计，而且，在设计中要考虑测试的问题。终于解开了心中的困惑，现在的你，对于TDD有了一个新的认识，虽然这个认识不见得是什么终极真理，但至少是通过自己的思考得来的，这让你更加相信实践出真知的道理。</p>
+
+<p>理清思路后，你更加坚信TDD本身的价值所在，也坚定了在日后开发中继续使用TDD的念头，当然，目光远大的你已经盯上了其它的敏捷实践。</p>
+
+<p><a href="http://dreamhead.blogbus.com/logs/14189175.html">版权：</a>，转载时请标明出处与作者。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[First Blog]]></title>
+    <link href="http://xeostream.github.io/blog/2013/03/03/first-blog/"/>
+    <updated>2013-03-03T19:14:00-06:00</updated>
+    <id>http://xeostream.github.io/blog/2013/03/03/first-blog</id>
+    <content type="html"><![CDATA[<h1>This is my first blog</h1>
+
+<p>Hello,Octopress!</p>
+]]></content>
+  </entry>
+  
+</feed>
