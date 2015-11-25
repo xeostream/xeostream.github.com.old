@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>About - iostreamin&#8217;s Blog</title>
+  <title>Windows端react Native 开发android的一些问题 - iostreamin&#8217;s Blog</title>
   <meta name="author" content="iostreamin">
 
   
-  <meta name="description" content="About Mar 16th, 2013 11:23 pm 王建双,iostreamin@gmail.com,就读于东南大学软件学院。 Mar 16th, 2013 11:23 pm Comments Please enable JavaScript to view the comments &hellip;">
+  <meta name="description" content="最近react-native的技术十分火热，正好最近在看Android的开发。因为了解到react-native号称一套解决方案打通Web、Android、iOS之间的壁垒，如果可以做到的话，绝对是鼓舞人心的大好事。 事先说明，我的系统是win10，node的版本是4.1.2，npm的版本是2. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://xeostream.github.io/about/">
+  <link rel="canonical" href="http://xeostream.github.io/blog/2015/11/25/react-native-android/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="iostreamin's Blog" type="application/atom+xml">
@@ -74,42 +74,73 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">About</h1>
-    <p class="meta">
-
-
-
-
-<time class='entry-date' datetime='2013-03-16T23:23:00+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>11:23 pm</span></time></p>
-  </header>
-  
-  <p>王建双,<a href="http://iostreamin@gmail.com">iostreamin@gmail.com</a>,就读于东南大学软件学院。</p>
-
-  
-    <footer>
+    
+      <h1 class="entry-title">Windows端react Native 开发android的一些问题</h1>
+    
+    
       <p class="meta">
         
+
+
+
+
+<time class='entry-date' datetime='2015-11-25T23:05:37+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:05 pm</span></time>
         
-
-
-
-
-<time class='entry-date' datetime='2013-03-16T23:23:00+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>11:23 pm</span></time>
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://xeostream.github.io">Comments</a>
         
       </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>最近react-native的技术十分火热，正好最近在看Android的开发。因为了解到react-native号称一套解决方案打通Web、Android、iOS之间的壁垒，如果可以做到的话，绝对是鼓舞人心的大好事。</p>
+
+<p>事先说明，我的系统是win10，node的版本是4.1.2，npm的版本是2.14.4，react-native的版本是0.12.0，这些组合目前遇到了特殊的问题。另外在安装react-native可能会遇到一些C++模块缺失的问题，这类问题可通过安装最新的Vistual Studio解决。</p>
+
+<p>遇到的问题主要是在运行<code>react-native run-android</code>命令后，APP会显示<code>unable to download bundle js</code>的错误，即使设置了服务端的ip地址reload js之后依然存在这个问题。我在搜索中查找了各种答案都是在说需要设置服务端的ip地址，但是没有答案说明为什么需要这样做。通过查阅官方文档得知，手机APP需要连接service:8081/index.android.bundle?platform=android这个url下载一些脚本，如果服务端没有启动监听此端口的服务器，APP如何设置都是没用的。</p>
+
+<p>那么为什么其他人没有出现这种问题呢，主要原因是react-native对windows的支持还不够完善，无法在执行<code>react-native run-android</code>时，先启动服务器。所以需要我们手动启动服务器。命令是<code>node ~\工程名\node_modules\react-native\packager\packager.js</code>，启动服务端之后，重新reload js，即OK。</p>
+
+<p>这件事情告诉我们一个道理：搞开源的技术，首先要有一台*nix电脑；然后就是一定要看官方文档，其他翻译的都不要当真。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
       
-        <div class="sharing">
+  
+
+<span class="byline author vcard">Posted by <span class="fn">iostreamin</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-11-25T23:05:37+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:05 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
   
   
   
 </div>
 
+    
+    <p class="meta">
       
-    </footer>
-  
+        <a class="basic-alignment left" href="/blog/2015/05/17/java8/" title="Previous Post: Java8入门">&laquo; Java8入门</a>
+      
+      
+    </p>
+  </footer>
 </article>
 
   <section>
@@ -123,6 +154,12 @@
 <aside class="sidebar">
   
     <section>
+  <h1>About Me</h1>
+  <p>Jianshuang Wang</p>
+  <p>Email:<a href="mailto:iostreamin@gmail.com">iostremin@gmail.com</a></p>
+  <p>study in Software Engineering of Southeast University,devote to Java,Ruby,Web development,Algorithm,OpenSource..
+</section>
+<section>
   <h1>Tag Cloud</h1>
     <span id="tag-cloud"><a href='/blog/categories/algorithm' style='font-size: 130.0%'>algorithm(1)</a> <a href='/blog/categories/code' style='font-size: 130.0%'>code(1)</a> <a href='/blog/categories/concept' style='font-size: 130.0%'>concept(1)</a> <a href='/blog/categories/java8' style='font-size: 130.0%'>java8(1)</a> <a href='/blog/categories/regular-expression' style='font-size: 130.0%'>regular expression(1)</a> <a href='/blog/categories/ror' style='font-size: 160.0%'>ror(2)</a> <a href='/blog/categories/study' style='font-size: 160.0%'>study(2)</a> <a href='/blog/categories/test' style='font-size: 130.0%'>test(1)</a> <a href='/blog/categories/tutorial' style='font-size: 130.0%'>tutorial(1)</a> </span>
 </section>
@@ -199,9 +236,6 @@
 </section>
 
 
-
-
-
   
 </aside>
 
@@ -221,8 +255,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://xeostream.github.io/about/index.html';
-        var disqus_url = 'http://xeostream.github.io/about/index.html';
+        var disqus_identifier = 'http://xeostream.github.io/blog/2015/11/25/react-native-android/';
+        var disqus_url = 'http://xeostream.github.io/blog/2015/11/25/react-native-android/';
         var disqus_script = 'embed.js';
       
     (function () {
