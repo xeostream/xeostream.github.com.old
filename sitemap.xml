@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://xeostream.github.io/blog/2016/05/15/java-aes-decrypt-fail/</loc>
+    <lastmod>2016-05-15T22:31:00+08:00</lastmod>
+  </url>
+  <url>
     <loc>http://xeostream.github.io/blog/2015/11/25/react-native-android/</loc>
     <lastmod>2015-11-25T23:05:37+08:00</lastmod>
   </url>
@@ -79,7 +83,13 @@
     <loc>http://xeostream.github.io/blog/categories/regular-expression/</loc>
   </url>
   <url>
-    <loc>http://xeostream.github.io/blog/categories/java8/</loc>
+    <loc>http://xeostream.github.io/blog/categories/java/</loc>
+  </url>
+  <url>
+    <loc>http://xeostream.github.io/blog/categories/react-native/</loc>
+  </url>
+  <url>
+    <loc>http://xeostream.github.io/blog/categories/aes/</loc>
   </url>
   <url>
     <loc>http://xeostream.github.io/love/love.html</loc>
