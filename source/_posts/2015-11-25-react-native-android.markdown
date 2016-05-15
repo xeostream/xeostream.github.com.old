@@ -3,7 +3,7 @@ layout: post
 title: "Windows端react native 开发android的一些问题"
 date: 2015-11-25 23:05:37 +0800
 comments: true
-categories: 
+categories: React-Native
 ---
 最近react-native的技术十分火热，正好最近在看Android的开发。因为了解到react-native号称一套解决方案打通Web、Android、iOS之间的壁垒，如果可以做到的话，绝对是鼓舞人心的大好事。
 <!--more-->

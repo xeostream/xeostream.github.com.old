@@ -3,7 +3,7 @@ layout: post
 title: "Java8入门"
 date: 2015-05-17 21:41:09 +0800
 comments: true
-categories: Java8
+categories: Java
 ---
 Java 8发布已经有一段时间了，总体上说Java 8本身是很有诚意的，带来了很多变化。从目前来看，各大Java开源社区和开源软件对Java 8还是比较欢迎的。Spring在Java 8发布后就推出了兼容Java 8的新版本。从开源软件和开发人员的反馈来看，Java 8应该会逐渐替代旧版本成为Java开发的新基石。
 <!-- more -->
