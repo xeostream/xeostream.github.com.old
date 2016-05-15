@@ -6,6 +6,7 @@ comments: true
 categories: 
 ---
 最近react-native的技术十分火热，正好最近在看Android的开发。因为了解到react-native号称一套解决方案打通Web、Android、iOS之间的壁垒，如果可以做到的话，绝对是鼓舞人心的大好事。
+<!--more-->
 
 事先说明，我的系统是win10，node的版本是4.1.2，npm的版本是2.14.4，react-native的版本是0.12.0，这些组合目前遇到了特殊的问题。另外在安装react-native可能会遇到一些C++模块缺失的问题，这类问题可通过安装最新的Vistual Studio解决。
 
